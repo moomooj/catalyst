@@ -165,8 +165,26 @@ function buildCalendarDays(
   });
 }
 
-export function BookingCalendarStep() {
+export function BookingCalendarStep({
+  busyDates = [],
+}: {
+  busyDates?: { date: string; eventType: string }[];
+}) {
   const router = useRouter();
+
+  const getEventInfo = (type: string) => {
+    switch (type) {
+      case "WEDDING":
+        return { label: "Wedding", dotColor: "bg-[#A3B18A]" };
+      case "BRAND":
+        return { label: "Corporate", dotColor: "bg-[#8E9AAF]" };
+      case "PRIVATE":
+        return { label: "Private", dotColor: "bg-[#D4A373]" };
+      default:
+        return { label: type, dotColor: "bg-[#7C826F]" };
+    }
+  };
+
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const earliestBookableDate = useMemo(() => {
     const now = new Date();
@@ -222,17 +240,14 @@ export function BookingCalendarStep() {
     () => buildCalendarDays(viewMonth, earliestBookableDate),
     [viewMonth, earliestBookableDate],
   );
-  const canGoToPreviousMonth =
-    viewMonth.getFullYear() > earliestBookableDate.getFullYear() ||
-    (viewMonth.getFullYear() === earliestBookableDate.getFullYear() &&
-      viewMonth.getMonth() > earliestBookableDate.getMonth());
+  const canGoToPreviousMonth = true;
   const yearOptions = useMemo(
     () =>
       Array.from(
-        { length: 6 },
-        (_, index) => earliestBookableDate.getFullYear() + index,
+        { length: 10 },
+        (_, index) => new Date().getFullYear() - 2 + index,
       ),
-    [earliestBookableDate],
+    [],
   );
   const guestCountNumber = Number(guestCount) > 0 ? Number(guestCount) : 0;
   const selectedPackage =
@@ -350,13 +365,7 @@ export function BookingCalendarStep() {
   };
 
   const applyMonthYear = (year: number, monthIndex: number) => {
-    const next = new Date(year, monthIndex, 1);
-    const floor = new Date(
-      earliestBookableDate.getFullYear(),
-      earliestBookableDate.getMonth(),
-      1,
-    );
-    setViewMonth(next < floor ? floor : next);
+    setViewMonth(new Date(year, monthIndex, 1));
     setIsPickerOpen(false);
   };
 
@@ -442,12 +451,7 @@ export function BookingCalendarStep() {
             <button
               type="button"
               onClick={goToPreviousMonth}
-              disabled={!canGoToPreviousMonth}
-              className={`rounded-md border border-[#C8C1B0] px-3 py-2 text-xs text-[#6B7360] transition ${
-                canGoToPreviousMonth
-                  ? "hover:bg-[#E4DFD6]"
-                  : "cursor-not-allowed opacity-35 hover:bg-transparent"
-              }`}
+              className="rounded-md border border-[#C8C1B0] px-3 py-2 text-xs text-[#6B7360] transition hover:bg-[#E4DFD6]"
             >
               Previous
             </button>
@@ -472,17 +476,7 @@ export function BookingCalendarStep() {
                             key={year}
                             type="button"
                             onClick={() => {
-                              const next = new Date(
-                                year,
-                                viewMonth.getMonth(),
-                                1,
-                              );
-                              const floor = new Date(
-                                earliestBookableDate.getFullYear(),
-                                earliestBookableDate.getMonth(),
-                                1,
-                              );
-                              setViewMonth(next < floor ? floor : next);
+                              setViewMonth(new Date(year, viewMonth.getMonth(), 1));
                             }}
                             className={`rounded-md border px-2 py-2 text-xs transition ${
                               isActive
@@ -500,16 +494,11 @@ export function BookingCalendarStep() {
                     <div className="grid grid-cols-3 gap-2">
                       {monthOptions.map((month, monthIndex) => {
                         const isActive = monthIndex === viewMonth.getMonth();
-                        const isBlocked =
-                          viewMonth.getFullYear() ===
-                            earliestBookableDate.getFullYear() &&
-                          monthIndex < earliestBookableDate.getMonth();
 
                         return (
                           <button
                             key={month}
                             type="button"
-                            disabled={isBlocked}
                             onClick={() =>
                               applyMonthYear(
                                 viewMonth.getFullYear(),
@@ -520,7 +509,7 @@ export function BookingCalendarStep() {
                               isActive
                                 ? "border-[#7C826F] bg-[#7C826F] text-white"
                                 : "border-[#C8C1B0] text-[#6B7360] hover:bg-[#E4DFD6]"
-                            } ${isBlocked ? "cursor-not-allowed opacity-35 hover:bg-transparent" : ""}`}
+                            }`}
                           >
                             {month.slice(0, 3)}
                           </button>
@@ -559,7 +548,10 @@ export function BookingCalendarStep() {
           <div className="mt-2 grid grid-cols-7 gap-2">
             {calendarDays.map((day) => {
               const isSelected = selectedDate === day.isoDate;
-              const disabled = day.isBeforeLeadTime;
+              const busyDay = busyDates.find((b) => b.date === day.isoDate);
+              const isBusy = !!busyDay;
+              const disabled = day.isBeforeLeadTime || isBusy;
+              const eventInfo = isBusy ? getEventInfo(busyDay.eventType) : null;
 
               return (
                 <button
@@ -567,15 +559,30 @@ export function BookingCalendarStep() {
                   type="button"
                   disabled={disabled}
                   onClick={() => setSelectedDate(day.isoDate)}
-                  className={`aspect-square rounded-md border text-sm transition ${
+                  className={`aspect-square rounded-md border text-sm transition relative flex flex-col items-center justify-center ${
                     isSelected
                       ? "border-[#7C826F] bg-[#7C826F] text-white"
-                      : day.isCurrentMonth
-                        ? "border-[#C8C1B0] bg-[#FBFAF7] text-[#303520] hover:bg-[#E4DFD6]"
-                        : "border-[#DDD6C7] bg-[#F1EDE5] text-[#A19C90]"
-                  } ${disabled ? "cursor-not-allowed opacity-40 hover:bg-[#F1EDE5]" : ""}`}
+                      : isBusy
+                        ? "cursor-not-allowed border-[#D6CAB7] bg-[#EAE8E4] text-[#A19C90] opacity-100"
+                        : day.isCurrentMonth
+                          ? "border-[#C8C1B0] bg-[#FBFAF7] text-[#303520] hover:bg-[#E4DFD6]"
+                          : "border-[#DDD6C7] bg-[#F1EDE5] text-[#A19C90]"
+                  } ${disabled && !isBusy ? "cursor-not-allowed opacity-40 hover:bg-[#F1EDE5]" : ""}`}
                 >
-                  {day.dayLabel}
+                  <span className={isBusy ? "font-semibold" : ""}>
+                    {day.dayLabel}
+                  </span>
+                  {isBusy && (
+                    <div className="absolute bottom-1 flex flex-col items-center gap-0 md:bottom-1.5 md:gap-0.5">
+                      <span className="block text-[6px] font-bold text-[#A19C90] uppercase tracking-tight leading-none md:text-[7px] md:tracking-tighter">Booked</span>
+                      <div className="flex items-center gap-0.5 md:gap-1">
+                        <div className={`hidden md:block h-1.5 w-1.5 rounded-full ${eventInfo?.dotColor}`} />
+                        <span className="hidden font-bold tracking-tight text-[#7C826F] uppercase md:block md:text-[9px]">
+                          {eventInfo?.label}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </button>
               );
             })}
