@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String?
+  role         String    @default("admin")
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  sessions     Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Booking {
+  id                      Int                  @id @default(autoincrement())
+  date                    DateTime
+  eventType               EventType
+  address                 String
+  venueType               VenueType
+  guestCount              Int
+  drinkCount              Int                  @default(0)
+  perDrinkPrice           Int                  @default(6)
+  package                 String
+  cocktailNumber          Int
+  hours                   Int
+  cocktails               Json
+  estimatedTotal          Int                  @default(0)
+  total                   Int                  @default(0)
+  name                    String
+  email                   String
+  phone                   String
+  note                    String?
+  status                  BookingStatus        @default(NEW)
+  eventsPermit            Boolean              @default(false)
+  depositPaid             Boolean              @default(false)
+  finalPaid               Boolean              @default(false)
+  emailSentAt             DateTime?
+  depositAmount           Int                  @default(0)
+  stripeCheckoutSessionId String?              @unique
+  stripePaymentIntentId   String?
+  paymentStatus           BookingPaymentStatus @default(PENDING)
+  paymentLinkSentAt       DateTime?
+  options                 Json                 @default("[]")
+  taxes                   Json                 @default("[]")
+  isActive                Boolean              @default(true)
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+
+  @@index([date])
+}
+
+enum EventType {
+  WEDDING
+  BRAND
+  PRIVATE
+}
+
+enum BookingStatus {
+  NEW
+  CHECKED
+  DEPOSIT_PAID
+  CONFIRMED
+  CANCELED
+}
+
+enum BookingPaymentStatus {
+  PENDING
+  PAID
+}
+
+enum VenueType {
+  INDOOR
+  OUTDOOR
+}
