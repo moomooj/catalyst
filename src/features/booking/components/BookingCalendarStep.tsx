@@ -423,11 +423,11 @@ export function BookingCalendarStep({
           className="inline-flex items-center"
         >
           <Image
-            src="/images/catalyst-logo.svg"
+            src="/images/catalyst-bar-olive.png"
             alt="The Catalyst Mobile Bar"
-            width={140}
-            height={30}
-            className="h-auto w-[140px]"
+            width={160}
+            height={34}
+            className="h-auto w-[160px]"
             priority
           />
         </Link>

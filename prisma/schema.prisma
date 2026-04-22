@@ -90,3 +90,22 @@ enum VenueType {
   INDOOR
   OUTDOOR
 }
+
+model Drink {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  image       String
+  alcoholType AlcoholType
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum AlcoholType {
+  TEQUILA
+  RUM
+  GIN
+  VODKA
+  WHISKEY
+}
