@@ -92,14 +92,14 @@ enum VenueType {
 }
 
 model Drink {
-  id          Int         @id @default(autoincrement())
-  name        String
-  description String
-  image       String
-  alcoholType AlcoholType
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id           Int         @id @default(autoincrement())
+  name         String
+  description  String
+  image        String
+  alcoholTypes Json        // Array of AlcoholType strings (Mandatory)
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 enum AlcoholType {

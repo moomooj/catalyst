@@ -5,68 +5,147 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { writeFile } from "node:fs/promises";
+import { writeFile, unlink } from "node:fs/promises";
 import { join } from "node:path";
 
-const createDrinkSchema = z.object({
+const drinkSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
-  alcoholType: z.enum(["TEQUILA", "RUM", "GIN", "VODKA", "WHISKEY"]),
+  alcoholTypes: z.array(z.enum(["TEQUILA", "RUM", "GIN", "VODKA", "WHISKEY"])).min(1, "Select at least one alcohol type"),
 });
 
 export async function createDrinkAction(formData: FormData) {
   await requireAdmin();
 
-  // 1. 파일 데이터 추출
   const imageFile = formData.get("image") as File;
   if (!imageFile || imageFile.size === 0) {
     return { error: { image: ["Image file is required"] } };
   }
 
-  // WebP 확장자 검증
   if (imageFile.type !== "image/webp") {
     return { error: { image: ["Only .webp files are allowed"] } };
   }
 
-  // 2. 기본 데이터 추출 및 검증
+  const alcoholTypes = formData.getAll("alcoholTypes") as string[];
   const data = {
     name: formData.get("name") as string,
     description: formData.get("description") as string,
-    alcoholType: formData.get("alcoholType") as any,
+    alcoholTypes,
   };
 
-  const parsed = createDrinkSchema.safeParse(data);
-  if (!parsed.success) {
-    return { error: parsed.error.flatten().fieldErrors };
-  }
+  const parsed = drinkSchema.safeParse(data);
+  if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
   try {
-    // 3. 파일 저장 로직
     const bytes = await imageFile.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    // 파일 이름 생성 (타임스탬프 + 안전한 파일명)
     const fileName = `${Date.now()}-${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
     const uploadDir = join(process.cwd(), "public", "images", "drinks");
-    const filePath = join(uploadDir, fileName);
     const dbPath = `/images/drinks/${fileName}`;
 
-    await writeFile(filePath, buffer);
+    await writeFile(join(uploadDir, fileName), buffer);
 
-    // 4. DB 저장
     await db.drink.create({
       data: {
         name: parsed.data.name,
         description: parsed.data.description,
         image: dbPath,
-        alcoholType: parsed.data.alcoholType,
+        alcoholTypes: parsed.data.alcoholTypes,
       },
     });
   } catch (err) {
-    console.error("Upload error:", err);
-    return { error: "Failed to upload image or save drink to database." };
+    return { error: "Failed to create drink." };
   }
 
   revalidatePath("/admin/drinks");
   redirect("/admin/drinks");
+}
+
+export async function updateDrinkAction(id: number, formData: FormData) {
+  await requireAdmin();
+
+  const alcoholTypes = formData.getAll("alcoholTypes") as string[];
+  const data = {
+    name: formData.get("name") as string,
+    description: formData.get("description") as string,
+    alcoholTypes,
+  };
+
+  const parsed = drinkSchema.safeParse(data);
+  if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
+
+  try {
+    const existing = await db.drink.findUnique({ where: { id } });
+    if (!existing) return { error: "Drink not found." };
+
+    let imagePath = existing.image;
+    const newImage = formData.get("image") as File;
+
+    // 새로운 이미지가 업로드된 경우
+    if (newImage && newImage.size > 0) {
+      if (newImage.type !== "image/webp") return { error: { image: ["Only .webp allowed"] } };
+      
+      // 기존 파일 삭제 시도
+      try {
+        await unlink(join(process.cwd(), "public", existing.image));
+      } catch (e) {}
+
+      const bytes = await newImage.arrayBuffer();
+      const fileName = `${Date.now()}-${newImage.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+      imagePath = `/images/drinks/${fileName}`;
+      await writeFile(join(process.cwd(), "public", imagePath), Buffer.from(bytes));
+    }
+
+    await db.drink.update({
+      where: { id },
+      data: {
+        name: parsed.data.name,
+        description: parsed.data.description,
+        image: imagePath,
+        alcoholTypes: parsed.data.alcoholTypes,
+      },
+    });
+  } catch (err) {
+    return { error: "Failed to update drink." };
+  }
+
+  revalidatePath("/admin/drinks");
+  redirect("/admin/drinks");
+}
+
+export async function deleteDrinkAction(id: number) {
+  await requireAdmin();
+
+  try {
+    const drink = await db.drink.findUnique({ where: { id } });
+    if (!drink) return { error: "Drink not found." };
+
+    // 1. 이미지 파일 삭제 (DB 삭제 전 수행)
+    if (drink.image) {
+      try {
+        const fullPath = join(process.cwd(), "public", drink.image);
+        await unlink(fullPath);
+        console.log(`Successfully deleted image: ${fullPath}`);
+      } catch (e) {
+        // 파일이 이미 없거나 권한 문제일 경우 무시하고 진행
+        console.warn(`File deletion skipped: ${drink.image}`, e);
+      }
+    }
+
+    // 2. DB 레코드 삭제
+    await db.drink.delete({ where: { id } });
+  } catch (err) {
+    console.error("Delete error:", err);
+    return { error: "Failed to delete drink from database." };
+  }
+
+  revalidatePath("/admin/drinks");
+  redirect("/admin/drinks");
+}
+
+export async function getDrinkById(id: number) {
+  await requireAdmin();
+  return db.drink.findUnique({
+    where: { id },
+  });
 }
