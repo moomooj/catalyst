@@ -24,7 +24,7 @@ export default async function BookingConfirmationPage({ params }: Props) {
   const booking = await getBookingById(bookingId);
   if (!booking) notFound();
 
-  // 모든 음료 정보를 가져와서 매칭 (하이볼 계산용)
+  // 모든 음료 정보를 가져와서 매칭
   const allDrinksInDb = await db.drink.findMany({
     select: { name: true, alcoholTypes: true }
   });
@@ -55,153 +55,111 @@ export default async function BookingConfirmationPage({ params }: Props) {
   const bookingNumber = `#${String(booking.id).padStart(5, "0")}`;
 
   return (
-    <main className={`${raleway.className} relative min-h-screen md:h-screen w-screen bg-[#EAE8E4] text-[#303520] flex flex-col items-center justify-center md:overflow-hidden py-10 md:py-0`}>
-      {/* Background Watermarks */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[10%] left-[-2%] text-[25vw] md:text-[18vw] font-bold text-white/10 uppercase tracking-tighter leading-none select-none">
-          CATALYST
+    <main className={`${raleway.className} relative h-screen w-screen bg-[#EAE8E4] text-[#303520] flex flex-col items-center justify-center overflow-hidden`}>
+      {/* Background Bold Typography */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[5%] left-[-5%] text-[22vw] font-black text-white/20 uppercase tracking-tighter leading-none opacity-50">
+          CONFIRMED
         </div>
-        <div className="absolute bottom-[5%] right-[-2%] text-[15vw] md:text-[12vw] font-bold text-white/5 uppercase tracking-widest leading-none select-none">
-          VANCOUVER
+        <div className="absolute bottom-[5%] right-[-5%] text-[18vw] font-black text-[#7C826F]/10 uppercase tracking-tighter leading-none">
+          CATALYST
         </div>
       </div>
 
-      <div className="relative z-10 w-full max-w-6xl h-full md:max-h-[90vh] flex flex-col px-4">
-        <div className="flex-1 bg-[#FDFCFB] border-t-8 border-t-[#7C826F] border-x border-b border-[#D6CAB7] shadow-2xl flex flex-col animate-in fade-in duration-1000 md:overflow-hidden">
+      <div className="relative z-10 w-full max-w-6xl h-full max-h-[92vh] flex flex-col px-6">
+        {/* Full-Width Magazine Style Card */}
+        <div className="flex-1 bg-[#FDFCFB] border border-[#D6CAB7] shadow-[0_50px_100px_-20px_rgba(48,53,32,0.25)] flex flex-col animate-in fade-in duration-1000 overflow-hidden relative">
           
-          {/* Header */}
-          <header className="flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-8 md:py-10 border-b border-[#F5F2F0] bg-[#F9F8F6]/40 shrink-0">
-            <Link href="/" className="mb-6 md:mb-0 block">
-              <Image src="/images/catalyst-bar-olive.png" alt="The Catalyst" width={160} height={34} priority />
-            </Link>
-            <div className="flex flex-col items-center md:items-end">
-              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#7C826F] mb-1">Confirmation Number</span>
-              <p className="text-4xl md:text-5xl font-bold tracking-tighter text-[#303520]">{bookingNumber}</p>
-            </div>
-          </header>
+          {/* Top Info Bar */}
+          <div className="flex justify-between items-center px-10 py-6 bg-[#303520] text-white shrink-0">
+             <div className="flex items-center gap-10">
+               <Image src="/images/catalyst-bar-white.png" alt="Catalyst" width={120} height={26} />
+               <div className="h-4 w-px bg-white/30 hidden md:block" />
+               <p className="text-[10px] font-bold uppercase tracking-[0.4em] hidden md:block opacity-80">Premium Mobile Bar Experience</p>
+             </div>
+             <p className="text-xl font-bold tracking-widest">{bookingNumber}</p>
+          </div>
 
-          <div className="flex-1 flex flex-col md:flex-row min-h-0">
-            {/* Left Content */}
-            <div className="w-full md:w-5/12 p-8 md:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#F5F2F0] overflow-y-auto">
-              <div className="space-y-12">
-                <div className="space-y-5">
-                  <h1 className="text-4xl md:text-6xl font-light tracking-tight text-[#303520] leading-tight">
-                    Cheers, <br />
-                    <span className="italic font-normal text-[#7C826F]">{booking.name.split(" ")[0]}.</span>
-                  </h1>
-                  <p className="text-sm font-medium leading-relaxed text-[#7C826F] max-w-[320px] border-l-2 border-[#7C826F] pl-6">
-                    Your inquiry has been successfully received. A curated proposal will reach your inbox within 24-48h.
-                  </p>
+          <div className="flex-1 flex flex-col p-10 md:p-16 justify-between overflow-hidden">
+            
+            {/* Row 1: Greetings & Event Detail */}
+            <div className="flex flex-col md:flex-row justify-between items-end gap-12 border-b border-[#F5F2F0] pb-12 shrink-0">
+              <div className="max-w-xl">
+                <p className="text-[10px] font-bold uppercase tracking-[0.6em] text-[#7C826F] mb-6">Reservation Confirmation</p>
+                <h1 className="text-5xl md:text-7xl font-light tracking-tight text-[#303520] leading-none">
+                  Cheers, <span className="italic font-normal text-[#7C826F]">{booking.name.split(" ")[0]}.</span>
+                </h1>
+                <p className="text-sm mt-8 text-[#7C826F] leading-relaxed max-w-sm">
+                  We have received your event inquiry. A bespoke program proposal is being curated for your upcoming occasion.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-x-16 gap-y-6 text-right">
+                <div className="space-y-1">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-[#B1AA9A]">Event Date</p>
+                  <p className="text-base font-bold">{dateLabel}</p>
                 </div>
-
-                <div className="space-y-8 pt-4">
-                  <div className="grid grid-cols-2 gap-10">
-                    <div className="space-y-2">
-                      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#B1AA9A]">Event Date</span>
-                      <p className="text-sm font-bold text-[#303520]">{dateLabel}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#B1AA9A]">Guests</span>
-                      <p className="text-sm font-bold text-[#303520]">{booking.guestCount} People</p>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#B1AA9A]">Location</span>
-                    <p className="text-sm font-bold text-[#303520] line-clamp-1">{booking.address}</p>
-                    <p className="text-[10px] text-[#7C826F] italic font-medium">{booking.venueType} Location</p>
-                  </div>
+                <div className="space-y-1">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-[#B1AA9A]">Attendance</p>
+                  <p className="text-base font-bold">{booking.guestCount} Guests</p>
                 </div>
-
-                {/* PC Only Price */}
-                <div className="hidden md:block pt-8 border-t border-[#F5F2F0]">
-                   <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#B1AA9A]">Estimated Total</span>
-                   <p className="text-4xl font-light text-[#303520] tracking-tight mt-1">
-                     ${booking.estimatedTotal.toLocaleString()}
-                   </p>
+                <div className="col-span-2 space-y-1">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-[#B1AA9A]">Location</p>
+                  <p className="text-base font-bold truncate max-w-[300px] ml-auto">{booking.address}</p>
+                  <p className="text-[10px] text-[#7C826F] italic">{booking.venueType} Setting</p>
                 </div>
               </div>
+            </div>
 
-              {/* PC Only Button - 확실히 보이도록 margin과 padding 확보 */}
-              <div className="hidden md:block mt-16 pt-10 border-t border-[#F5F2F0]">
-                <Link 
-                  href="/" 
-                  className="inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] text-[#303520] group"
-                >
-                  <span className="border-b-2 border-[#303520] group-hover:text-[#7C826F] group-hover:border-[#7C826F] transition-all pb-1">
-                    Return to Homepage
-                  </span>
-                  <svg className="h-3 w-3 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
+            {/* Row 2: Menu Selection (The Core) */}
+            <div className="flex-1 py-12 flex flex-col justify-center min-h-0">
+              <div className="flex items-center gap-6 mb-10">
+                <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#7C826F] shrink-0">Menu Selection</h3>
+                <div className="h-px flex-1 bg-[#D6D5CE]/50" />
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#B1AA9A] shrink-0">{booking.package}</p>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-12 gap-y-6">
+                {bookedCocktailNames.map((name, i) => (
+                  <div key={`c-${i}`} className="flex flex-col border-l border-[#7C826F]/30 pl-4 py-1">
+                    <span className="text-[11px] font-bold text-[#303520] uppercase tracking-tight leading-tight">{name}</span>
+                    <span className="text-[8px] uppercase tracking-widest text-[#7C826F] mt-1 font-bold">Cocktail</span>
+                  </div>
+                ))}
+                {highballMenu.map((name, i) => (
+                  <div key={`h-${i}`} className="flex flex-col border-l border-[#D6CAB7] pl-4 py-1">
+                    <span className="text-[11px] font-medium text-[#7C826F] italic uppercase tracking-tight leading-tight">{name}</span>
+                    <span className="text-[8px] uppercase tracking-widest text-[#B1AA9A] mt-1 font-bold">Highball</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Row 3: Total & Support */}
+            <div className="pt-10 border-t-2 border-[#303520] flex flex-col md:flex-row justify-between items-end gap-10 shrink-0">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#B1AA9A]">Estimated Investment</p>
+                <p className="text-5xl font-light tracking-tighter text-[#303520] leading-none">${booking.estimatedTotal.toLocaleString()}</p>
+                <p className="text-[9px] text-[#7C826F] font-bold uppercase tracking-widest mt-2">Subject to tax and seasonal adjustments</p>
+              </div>
+              
+              <div className="flex flex-col items-end gap-6">
+                <div className="flex items-center gap-8">
+                  <div className="text-right">
+                    <p className="text-[9px] text-[#B1AA9A] font-bold uppercase tracking-widest mb-1">Inquiries</p>
+                    <p className="text-xs text-[#303520] font-bold">hello@catalystmobilebar.ca</p>
+                  </div>
+                  <div className="h-8 w-px bg-[#D6D5CE]" />
+                  <div className="text-right">
+                    <p className="text-[9px] text-[#B1AA9A] font-bold uppercase tracking-widest mb-1">Vancouver</p>
+                    <p className="text-xs text-[#303520] font-bold tracking-widest">EST. 2024</p>
+                  </div>
+                </div>
+                <Link href="/" className="inline-block bg-[#303520] text-white px-10 py-4 text-[9px] font-bold uppercase tracking-[0.4em] hover:bg-[#7C826F] transition-all shadow-xl">
+                  Return to Homepage
                 </Link>
               </div>
             </div>
-
-            {/* Right Content */}
-            <div className="w-full md:w-7/12 p-8 md:p-16 bg-[#F9F8F6]/30 flex flex-col overflow-hidden">
-              <div className="flex-1 space-y-12 overflow-y-auto pr-4 custom-scrollbar">
-                <div className="space-y-4">
-                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-[#7C826F] block border-b border-[#7C826F]/20 pb-3">Program</span>
-                  <div className="space-y-1">
-                    <p className="text-lg font-bold text-[#303520] uppercase tracking-tight">{booking.package}</p>
-                    <p className="text-[11px] text-[#7C826F] italic font-medium">{booking.hours} Hours of Premium Hospitality</p>
-                  </div>
-                </div>
-
-                <div className="space-y-8">
-                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-[#7C826F] block border-b border-[#7C826F]/20 pb-3">Curated Menu</span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5">
-                    {bookedCocktailNames.map((name, i) => (
-                      <div key={`c-${i}`} className="flex items-center gap-3">
-                        <div className="h-1.5 w-1.5 bg-[#7C826F] rotate-45" />
-                        <span className="text-[11px] font-bold text-[#303520] uppercase tracking-tight">{name}</span>
-                      </div>
-                    ))}
-                    {highballMenu.map((name, i) => (
-                      <div key={`h-${i}`} className="flex items-center gap-3">
-                        <div className="h-1.5 w-1.5 border border-[#7C826F] rotate-45" />
-                        <span className="text-[11px] font-medium text-[#7C826F] italic uppercase">{name}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {booking.note && (
-                  <div className="space-y-4 pt-6 border-t border-[#D6D5CE]/50">
-                    <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-[#7C826F] block">Special Requests</span>
-                    <p className="text-[11px] text-[#303520] leading-relaxed bg-white/60 p-5 border-l-4 border-[#7C826F] italic font-medium shadow-sm">
-                      "{booking.note}"
-                    </p>
-                  </div>
-                )}
-
-                {/* Mobile Only Section */}
-                <div className="md:hidden pt-12 mt-12 border-t border-[#D6D5CE] space-y-10">
-                   <div>
-                     <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#B1AA9A]">Estimated Total</span>
-                     <p className="text-3xl font-light text-[#303520] mt-1">${booking.estimatedTotal.toLocaleString()}</p>
-                   </div>
-                   <Link href="/" className="flex items-center justify-center bg-[#303520] text-white py-5 text-[10px] font-bold uppercase tracking-[0.5em] shadow-xl active:scale-[0.98] transition-all">
-                     Return to Homepage
-                   </Link>
-                </div>
-              </div>
-
-              <div className="pt-10 border-t border-[#F5F2F0] flex justify-between items-center shrink-0 mt-10">
-                <div className="space-y-0.5">
-                  <p className="text-[9px] text-[#B1AA9A] font-bold uppercase tracking-widest">Inquiries</p>
-                  <p className="text-[11px] text-[#303520] font-bold italic">hello@catalystmobilebar.ca</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[8px] text-[#B1AA9A] uppercase font-bold tracking-widest">Vancouver • BC</p>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
-
-        <div className="mt-8 text-[9px] text-[#7C826F] font-bold uppercase tracking-[1em] opacity-40 text-center">
-          The Catalyst Mobile Bar
         </div>
       </div>
     </main>
