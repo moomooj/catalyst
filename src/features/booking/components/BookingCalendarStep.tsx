@@ -1223,25 +1223,25 @@ export function BookingCalendarStep({
             )}
           </div>
 
-          <div className="mt-16 flex justify-between border-t border-[#D6CAB7] pt-10">
+          <div className="mt-7 flex flex-col gap-3 border-t border-[#D6CAB7] pt-5 md:flex-row md:justify-between">
             <button
               type="button"
               onClick={() => setCurrentStep(3)}
-              className="text-[10px] font-bold uppercase tracking-widest text-[#B1AA9A] hover:text-[#303520] transition-colors"
+              className="rounded-md border border-[#D6CAB7] px-5 py-3 text-sm text-[#7C826F] transition hover:bg-[#EFECE6]"
             >
-              ← Back to Options
+              Back
             </button>
             <button
               type="button"
               disabled={selectedCocktailMenus.length !== totalCocktailSlots}
               onClick={() => setCurrentStep(5)}
-              className={`rounded-none px-12 py-4 text-[10px] font-bold uppercase tracking-widest transition-all ${
+              className={`rounded-md px-5 py-3 text-sm font-medium transition ${
                 selectedCocktailMenus.length === totalCocktailSlots
-                  ? "bg-[#303520] text-white hover:bg-[#7C826F] shadow-lg"
-                  : "bg-[#D6D5CE] text-[#B1AA9A] cursor-not-allowed"
+                  ? "bg-[#7C826F] text-white hover:bg-[#6B7360]"
+                  : "cursor-not-allowed bg-[#E0D9C9] text-[#A19C90]"
               }`}
             >
-              Review Summary
+              Next
             </button>
           </div>
         </section>
@@ -1390,7 +1390,7 @@ export function BookingCalendarStep({
               </button>
               <button
                 type="button"
-                disabled={!isContactValid || isSubmitting || !selectedDate}
+                disabled={!isStep5Valid || isSubmitting || !selectedDate}
                 onClick={async () => {
                   if (!selectedDate || isSubmitting) return;
                   setSubmitError(null);
@@ -1428,7 +1428,7 @@ export function BookingCalendarStep({
                   setIsSubmitted(true);
                 }}
                 className={`rounded-md px-5 py-3 text-sm font-medium transition ${
-                  isContactValid && !isSubmitting
+                  isStep5Valid && !isSubmitting
                     ? "bg-[#7C826F] text-white hover:bg-[#6B7360]"
                     : "cursor-not-allowed bg-[#E0D9C9] text-[#A19C90]"
                 }`}
