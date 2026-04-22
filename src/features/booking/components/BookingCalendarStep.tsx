@@ -1423,9 +1423,8 @@ export function BookingCalendarStep({
                     return;
                   }
 
-                  setSubmittedName(`${contactFirstName} ${contactLastName}`.trim());
-                  setIsSubmitting(false);
-                  setIsSubmitted(true);
+                  // 성공 시 전용 확인 페이지로 이동
+                  router.push(`/booking/confirmation/${result.data.id}`);
                 }}
                 className={`rounded-md px-5 py-3 text-sm font-medium transition ${
                   isStep5Valid && !isSubmitting
@@ -1438,7 +1437,7 @@ export function BookingCalendarStep({
             </div>
           )}
 
-          {submitError && !isSubmitted && (
+          {submitError && (
             <p className="mt-4 text-sm text-red-500 font-bold">{submitError}</p>
           )}
         </section>

@@ -41,9 +41,10 @@ export async function createDrinkAction(formData: FormData) {
     const buffer = Buffer.from(bytes);
     const fileName = `${Date.now()}-${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
     const uploadDir = join(process.cwd(), "public", "images", "drinks");
+    const fullPath = join(uploadDir, fileName);
     const dbPath = `/images/drinks/${fileName}`;
 
-    await writeFile(join(uploadDir, fileName), buffer);
+    await writeFile(fullPath, buffer);
 
     await db.drink.create({
       data: {
