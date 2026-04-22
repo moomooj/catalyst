@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createBookingAction } from "@/features/booking/actions";
+import { Drink } from "@prisma/client";
 import {
   MIN_GUARANTEED_DRINK_COUNT,
   PER_DRINK_PRICE,
@@ -82,41 +83,11 @@ const dryHireIncludedItems = [
   "Setup and Take Down",
 ] as const;
 
-const baseCocktailMenuOptions = [
-  {
-    id: "espresso-martini",
-    name: "Espresso Martini",
-    image: "/images/cocktails/mock-1.svg",
-  },
-  {
-    id: "old-fashioned",
-    name: "Old Fashioned",
-    image: "/images/cocktails/mock-2.svg",
-  },
-  { id: "negroni", name: "Negroni", image: "/images/cocktails/mock-3.svg" },
-  { id: "margarita", name: "Margarita", image: "/images/cocktails/mock-4.svg" },
-  {
-    id: "whiskey-sour",
-    name: "Whiskey Sour",
-    image: "/images/cocktails/mock-5.svg",
-  },
-  {
-    id: "aperol-spritz",
-    name: "Aperol Spritz",
-    image: "/images/cocktails/mock-6.svg",
-  },
-  { id: "paloma", name: "Paloma", image: "/images/cocktails/mock-7.svg" },
-  {
-    id: "cosmopolitan",
-    name: "Cosmopolitan",
-    image: "/images/cocktails/mock-8.svg",
-  },
-] as const;
-
 type CocktailMenuItem = {
   id: string;
   name: string;
   image: string;
+  alcoholTypes?: string[];
 };
 
 function toMonthLabel(date: Date): string {
@@ -167,8 +138,10 @@ function buildCalendarDays(
 
 export function BookingCalendarStep({
   busyDates = [],
+  drinks = [],
 }: {
   busyDates?: { date: string; eventType: string }[];
+  drinks?: Drink[];
 }) {
   const router = useRouter();
 
@@ -225,6 +198,27 @@ export function BookingCalendarStep({
   const [selectedCocktailMenus, setSelectedCocktailMenus] = useState<string[]>(
     [],
   );
+  const [alcoholFilter, setAlcoholFilter] = useState<string>("TEQUILA");
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  const alcoholLabels: Record<string, string> = {
+    TEQUILA: "Tequila",
+    VODKA: "Vodka",
+    GIN: "Gin",
+    RUM: "Rum",
+    WHISKEY: "Whiskey",
+  };
+
+  const cocktailMenuOptions = useMemo(() => {
+    const dbDrinks = drinks.map((d) => ({
+      id: String(d.id),
+      name: d.name,
+      image: d.image,
+      alcoholTypes: d.alcoholTypes as string[],
+    }));
+    return [...dbDrinks, ...customCocktailItems];
+  }, [drinks, customCocktailItems]);
+
   const [contactFirstName, setContactFirstName] = useState("");
   const [contactLastName, setContactLastName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
@@ -304,10 +298,6 @@ export function BookingCalendarStep({
     selectedPackageId === "premium"
       ? allInclusiveIncludedItems
       : dryHireIncludedItems;
-  const cocktailMenuOptions: CocktailMenuItem[] = [
-    ...baseCocktailMenuOptions,
-    ...customCocktailItems,
-  ];
   const isStep2Valid = Boolean(
     eventType && venueAddress.trim() && guestCountNumber > 0,
   );
@@ -371,17 +361,19 @@ export function BookingCalendarStep({
 
   const addCustomCocktail = () => {
     const name = customCocktailInput.trim();
-    if (!name) {
+    if (!name || selectedCocktailMenus.length >= totalCocktailSlots) {
       return;
     }
 
+    const nextId = `custom-${Date.now()}`;
     const nextItem: CocktailMenuItem = {
-      id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      id: nextId,
       name,
-      image: "/images/cocktails/cocktail-placeholder.svg",
+      image: "/images/cocktails/signature-lookbook.svg",
     };
 
     setCustomCocktailItems((prev) => [...prev, nextItem]);
+    setSelectedCocktailMenus((prev) => [...prev, nextId]);
     setCustomCocktailInput("");
   };
 
@@ -416,7 +408,7 @@ export function BookingCalendarStep({
 
   return (
     <main className="min-h-dvh bg-[#EAE8E4] px-6 py-6 text-[#303520] md:px-10 md:py-8">
-      <section className="mx-auto mb-2 flex w-full max-w-5xl">
+      <section className={`mx-auto flex w-full max-w-5xl transition-all duration-500 ${currentStep === 5 ? "justify-center mb-16" : "mb-2"}`}>
         <Link
           href="/"
           aria-label="Go to home"
@@ -433,17 +425,19 @@ export function BookingCalendarStep({
         </Link>
       </section>
 
-      <section className="mx-auto flex max-w-5xl flex-col">
-        <p className="mb-3 text-xs tracking-[0.24em] uppercase text-[#7C826F]">
-          Booking Step {currentStep} of 5
-        </p>
-        <h1 className="text-3xl leading-tight font-semibold md:text-5xl">
-          {stepHeading}
-        </h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-[#7C826F] md:text-base">
-          {stepDescription}
-        </p>
-      </section>
+      {currentStep < 5 && (
+        <section className="mx-auto flex max-w-5xl flex-col">
+          <p className="mb-3 text-xs tracking-[0.24em] uppercase text-[#7C826F]">
+            Booking Step {currentStep} of 5
+          </p>
+          <h1 className="text-3xl leading-tight font-semibold md:text-5xl">
+            {stepHeading}
+          </h1>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-[#7C826F] md:text-base">
+            {stepDescription}
+          </p>
+        </section>
+      )}
 
       {currentStep === 1 ? (
         <section className="relative mx-auto mt-8 w-full max-w-5xl rounded-2xl border border-[#C8C1B0] bg-[#F7F5F0] p-5 md:p-8">
@@ -1051,107 +1045,203 @@ export function BookingCalendarStep({
           </div>
         </section>
       ) : currentStep === 4 ? (
-        <section className="mx-auto mt-8 w-full max-w-5xl rounded-2xl border border-[#D6CAB7] bg-[#FDFCF8] p-5 md:p-8">
-          <div className="mb-5 rounded-md border border-[#D6CAB7] bg-[#F7F5F0] p-4 text-sm text-[#7C826F]">
-            <p>
-              Cocktail slots:{" "}
-              <span className="font-medium text-[#303520]">
-                {totalCocktailSlots}
-              </span>
-            </p>
-            <p className="mt-1 text-xs text-[#7C826F]">
-              Selected: {selectedCocktailMenus.length} / {totalCocktailSlots}
-            </p>
+        <section className="mx-auto mt-4 w-full max-w-5xl rounded-none border border-[#D6CAB7] bg-[#FDFCFB] p-4 md:mt-8 md:p-10 shadow-sm">
+          {/* Cocktail Slot Status */}
+          <div className="mb-6 flex items-center justify-between border-b border-[#F5F2F0] pb-4 md:mb-8 md:pb-6">
+             <div className="space-y-0.5">
+               <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#B1AA9A]">Selected Menu</p>
+               <p className="text-xs font-medium text-[#303520] md:text-sm">
+                 {selectedCocktailMenus.length} / {totalCocktailSlots} Slots Used
+               </p>
+             </div>
+             {selectedCocktailMenus.length >= totalCocktailSlots && (
+               <span className="text-[8px] font-bold uppercase tracking-widest text-[#7C826F] bg-[#F7F5F0] px-2 py-0.5 border border-[#D6CAB7]">Full</span>
+             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-            {cocktailMenuOptions.map((cocktail) => {
-              const selected = selectedCocktailMenus.includes(cocktail.id);
-              const atLimit =
-                selectedCocktailMenus.length >= totalCocktailSlots;
-              const disableNewSelection = !selected && atLimit;
-
-              return (
-                <button
-                  key={cocktail.id}
-                  type="button"
-                  disabled={disableNewSelection}
-                  onClick={() =>
-                    setSelectedCocktailMenus((prev) =>
-                      prev.includes(cocktail.id)
-                        ? prev.filter((id) => id !== cocktail.id)
-                        : [...prev, cocktail.id],
-                    )
-                  }
-                  className={`overflow-hidden rounded-md border text-left transition ${
-                    selected
-                      ? "border-[#7C826F] bg-[#7C826F] text-white"
-                      : "border-[#D6CAB7] bg-white text-[#303520] hover:bg-[#EFECE6]"
-                  } ${disableNewSelection ? "cursor-not-allowed opacity-35 hover:bg-[#F7F5F0]" : ""}`}
-                >
-                  <div className="relative aspect-square w-full">
-                    <Image
-                      src={cocktail.image}
-                      alt={cocktail.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="px-4 py-3">
-                    <p className="font-medium">{cocktail.name}</p>
-                    <p className="text-xs opacity-80">
-                      {selected ? "Selected" : "Tap to select"}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-5 rounded-md border border-[#D6CAB7] bg-[#F7F5F0] p-4">
-            <p className="mb-2 text-sm text-[#303520]">
-              Add custom cocktail requested by client
-            </p>
-            <div className="flex flex-col gap-2 md:flex-row">
-              <input
-                value={customCocktailInput}
-                onChange={(event) => setCustomCocktailInput(event.target.value)}
-                placeholder="e.g. Lychee Martini"
-                className="w-full rounded-md border border-[#C8C1B0] bg-white px-3 py-2 text-sm text-[#303520] placeholder:text-[#A19C90] shadow-sm focus:border-[#7C826F] focus:ring-2 focus:ring-[#7C826F]/20"
-              />
+          {/* Alcohol Category Tabs */}
+          <div className="mb-6 flex flex-wrap gap-4 border-b border-[#D6CAB7]/30 md:mb-10 md:gap-6">
+            {["TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY"].map((type) => (
               <button
+                key={type}
                 type="button"
-                onClick={addCustomCocktail}
-                className="rounded-md border border-[#D6CAB7] px-4 py-2 text-sm text-[#7C826F] transition hover:bg-[#EFECE6]"
+                onClick={() => setAlcoholFilter(type)}
+                className={`pb-2 text-[10px] font-bold uppercase tracking-widest border-b-2 transition-all duration-300 md:pb-4 md:text-xs ${
+                  alcoholFilter === type
+                    ? "border-[#7C826F] text-[#303520]"
+                    : "border-transparent text-[#B1AA9A] hover:text-[#7C826F]"
+                }`}
               >
-                Add
+                {type}
               </button>
+            ))}
+          </div>
+
+          {/* Cocktail Grid */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4 lg:grid-cols-5 md:gap-6">
+            {cocktailMenuOptions
+              .filter(c => c.alcoholTypes?.includes(alcoholFilter))
+              .map((cocktail) => {
+                const isSelected = selectedCocktailMenus.includes(cocktail.id);
+                const atLimit = selectedCocktailMenus.length >= totalCocktailSlots;
+                const isDisabled = !isSelected && atLimit;
+
+                return (
+                  <button
+                    key={cocktail.id}
+                    type="button"
+                    disabled={isDisabled}
+                    onClick={() =>
+                      setSelectedCocktailMenus((prev) =>
+                        prev.includes(cocktail.id)
+                          ? prev.filter((id) => id !== cocktail.id)
+                          : [...prev, cocktail.id],
+                      )
+                    }
+                    className={`group relative flex flex-col border transition-all duration-300 ${
+                      isSelected
+                        ? "border-[#7C826F] ring-1 ring-[#7C826F] shadow-md"
+                        : "border-[#D6CAB7] bg-white hover:border-[#7C826F]"
+                    } ${isDisabled ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
+                  >
+                    <div className="relative aspect-square w-full overflow-hidden bg-[#F9F8F6]">
+                      <Image
+                        src={cocktail.image}
+                        alt={cocktail.name}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      {isSelected && (
+                        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#303520]/30 backdrop-blur-[0.5px]">
+                          <div className="rounded-none bg-[#303520] p-1.5 text-white shadow-lg ring-1 ring-white/20">
+                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className={`flex flex-1 flex-col p-2 transition-colors duration-300 ${isSelected ? "bg-[#7C826F]" : "bg-white"}`}>
+                      <p className={`text-[9px] font-bold uppercase tracking-tight line-clamp-1 ${isSelected ? "text-white" : "text-[#303520]"}`}>
+                        {cocktail.name}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+          </div>
+
+          {/* Custom Cocktail Request Section */}
+          <div className={`mt-8 border border-dashed p-5 transition-all duration-500 md:mt-12 md:p-8 ${
+            selectedCocktailMenus.length >= totalCocktailSlots 
+              ? "bg-[#F7F5F0] border-[#D6CAB7] opacity-60" 
+              : "bg-[#FDFCFB] border-[#D6CAB7]"
+          }`}>
+            <div className="max-w-2xl">
+              <h4 className="text-[9px] font-medium uppercase tracking-[0.2em] text-[#B1AA9A] mb-3 transition-colors">
+                {selectedCocktailMenus.length >= totalCocktailSlots 
+                  ? "Maximum selection reached" 
+                  : "Can't find what you're looking for?"}
+              </h4>
+              <div className="flex flex-col gap-2 sm:flex-row md:gap-4">
+                <input
+                  type="text"
+                  disabled={selectedCocktailMenus.length >= totalCocktailSlots}
+                  value={customCocktailInput}
+                  onChange={(e) => setCustomCocktailInput(e.target.value)}
+                  placeholder={selectedCocktailMenus.length >= totalCocktailSlots 
+                    ? "Limit reached" 
+                    : "Request custom (e.g. Lychee Martini)"}
+                  className="flex-1 rounded-none border border-[#D6CAB7] bg-white px-4 py-2 text-xs focus:border-[#7C826F] focus:outline-none placeholder:text-[#B1AA9A] disabled:bg-transparent disabled:cursor-not-allowed"
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomCocktail())}
+                />
+                <button
+                  type="button"
+                  disabled={selectedCocktailMenus.length >= totalCocktailSlots || !customCocktailInput.trim()}
+                  onClick={addCustomCocktail}
+                  className="rounded-none bg-[#303520] px-6 py-2 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:bg-[#7C826F] disabled:bg-[#D6D5CE] disabled:cursor-not-allowed"
+                >
+                  Add
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="mt-7 flex flex-col gap-3 border-t border-[#D6CAB7] pt-5 md:flex-row md:justify-between">
+          {/* Your Selection Preview */}
+          <div className="mt-10 border-t border-[#D6CAB7] pt-6 md:mt-16 md:pt-10">
+            <h3 className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#7C826F] mb-4 md:mb-8">Selection Preview</h3>
+            {selectedCocktailMenus.length === 0 ? (
+              <p className="text-[10px] italic text-[#B1AA9A]">Please select from the menu above.</p>
+            ) : (
+              <div className="space-y-6 md:space-y-10">
+                <div className="flex flex-wrap gap-2 md:gap-4">
+                  {cocktailMenuOptions
+                    .filter(c => selectedCocktailMenus.includes(c.id))
+                    .map(c => (
+                      <div key={`sel-${c.id}`} className="flex items-center gap-2 border border-[#D6CAB7] bg-white pr-2 pl-1 py-1 shadow-sm md:gap-4 md:pr-4 md:pl-2 md:py-2 animate-in fade-in slide-in-from-left-2">
+                        <div className="relative h-6 w-6 overflow-hidden bg-[#F9F8F6] md:h-10 md:w-10">
+                          <Image src={c.image} alt={c.name} fill className="object-cover" />
+                        </div>
+                        <span className="text-[9px] font-bold text-[#303520] md:text-[11px]">{c.name}</span>
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            setSelectedCocktailMenus(prev => prev.filter(id => id !== c.id));
+                            if (c.id.startsWith('custom-')) {
+                              setCustomCocktailItems(prev => prev.filter(item => item.id !== c.id));
+                            }
+                          }}
+                          className="ml-1 text-[#B1AA9A] hover:text-red-500 transition-colors md:ml-2"
+                        >
+                          <svg className="h-3 w-3 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                </div>
+
+                {/* Automatic Highball Additions */}
+                <div className="space-y-2 md:space-y-4">
+                  <p className="text-[8px] font-bold uppercase tracking-widest text-[#B1AA9A] md:text-[10px]">Included Highballs</p>
+                  <div className="flex flex-col gap-1">
+                    {Array.from(new Set(
+                      cocktailMenuOptions
+                        .filter(c => selectedCocktailMenus.includes(c.id))
+                        .flatMap(c => c.alcoholTypes || [])
+                    )).sort((a, b) => {
+                      const order = ["TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY"];
+                      return order.indexOf(a) - order.indexOf(b);
+                    }).map(type => (
+                      <p key={`highball-${type}`} className="text-[9px] font-medium text-[#7C826F] italic md:text-[11px]">
+                        + {alcoholLabels[type]} Highball
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-16 flex justify-between border-t border-[#D6CAB7] pt-10">
             <button
               type="button"
               onClick={() => setCurrentStep(3)}
-              className="rounded-md border border-[#D6CAB7] px-5 py-3 text-sm text-[#7C826F] transition hover:bg-[#EFECE6]"
+              className="text-[10px] font-bold uppercase tracking-widest text-[#B1AA9A] hover:text-[#303520] transition-colors"
             >
-              Back
+              ← Back to Options
             </button>
             <button
               type="button"
               disabled={selectedCocktailMenus.length !== totalCocktailSlots}
-              onClick={() => {
-                if (selectedCocktailMenus.length === totalCocktailSlots) {
-                  setCurrentStep(5);
-                }
-              }}
-              className={`rounded-md px-5 py-3 text-sm font-medium transition ${
+              onClick={() => setCurrentStep(5)}
+              className={`rounded-none px-12 py-4 text-[10px] font-bold uppercase tracking-widest transition-all ${
                 selectedCocktailMenus.length === totalCocktailSlots
-                  ? "bg-[#7C826F] text-white hover:bg-[#6B7360]"
-                  : "cursor-not-allowed bg-[#E0D9C9] text-[#A19C90]"
+                  ? "bg-[#303520] text-white hover:bg-[#7C826F] shadow-lg"
+                  : "bg-[#D6D5CE] text-[#B1AA9A] cursor-not-allowed"
               }`}
             >
-              Next
+              Review Summary
             </button>
           </div>
         </section>
@@ -1190,25 +1280,28 @@ export function BookingCalendarStep({
                   Package:{" "}
                   <span className="text-[#303520]">{selectedPackage.name}</span>
                 </p>
-                {selectedPackageId === "premium" ? (
-                  <p>
-                    Drink Amount:{" "}
-                    <span className="text-[#303520]">{additionalDrinksCount}</span>
-                  </p>
-                ) : null}
                 <p>
                   Drink Type:{" "}
                   <span className="text-[#303520]">{drinkTypeLabel}</span>
                 </p>
-                <p>
-                  Cocktail Menu:{" "}
-                  <span className="text-[#303520]">
-                    {selectedCocktailNames.length
-                      ? selectedCocktailNames.join(", ")
-                      : "-"}
-                  </span>
-                </p>
-                <p className="pt-2 text-base font-semibold text-[#303520]">
+                
+                <div className="flex flex-col gap-2 pt-2">
+                  <span className="text-[#7C826F]">Cocktail Menu:</span>
+                  <div className="flex flex-col gap-1 pl-1">
+                    {selectedCocktailNames.map(name => (
+                      <p key={name} className="text-xs font-bold text-[#303520]">{name}</p>
+                    ))}
+                    {Array.from(new Set(
+                      cocktailMenuOptions
+                        .filter(c => selectedCocktailMenus.includes(c.id))
+                        .flatMap(c => c.alcoholTypes || [])
+                    )).sort((a,b) => ["TEQUILA","VODKA","GIN","RUM","WHISKEY"].indexOf(a) - ["TEQUILA","VODKA","GIN","RUM","WHISKEY"].indexOf(b)).map(t => (
+                      <p key={t} className="text-xs font-medium text-[#7C826F] italic">+ {alcoholLabels[t]} Highball</p>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="pt-2 text-base font-semibold text-[#303520] border-t border-[#D6CAB7]/30 mt-4">
                   Estimated Total: ${estimatedTotal}
                 </p>
               </div>
@@ -1225,9 +1318,7 @@ export function BookingCalendarStep({
                       First Name
                       <input
                         value={contactFirstName}
-                        onChange={(event) =>
-                          setContactFirstName(event.target.value)
-                        }
+                        onChange={(event) => setContactFirstName(event.target.value)}
                         className="rounded-md border border-[#C8C1B0] bg-white px-3 py-2 text-[#303520] placeholder:text-[#A19C90] shadow-sm focus:border-[#7C826F] focus:ring-2 focus:ring-[#7C826F]/20"
                         placeholder="First name"
                       />
@@ -1236,9 +1327,7 @@ export function BookingCalendarStep({
                       Last Name
                       <input
                         value={contactLastName}
-                        onChange={(event) =>
-                          setContactLastName(event.target.value)
-                        }
+                        onChange={(event) => setContactLastName(event.target.value)}
                         className="rounded-md border border-[#C8C1B0] bg-white px-3 py-2 text-[#303520] placeholder:text-[#A19C90] shadow-sm focus:border-[#7C826F] focus:ring-2 focus:ring-[#7C826F]/20"
                         placeholder="Last name"
                       />
@@ -1277,19 +1366,20 @@ export function BookingCalendarStep({
                 </div>
               </div>
             ) : (
-              <div className="rounded-md border border-[#D6CAB7] bg-[#F7F5F0] p-4">
-                <h2 className="text-lg font-medium text-[#303520]">
-                  Thank you for your booking!
-                </h2>
-                <p className="mt-3 text-sm text-[#A8E3B5]">
-                  {submittedName ? submittedName : "there"}! We will email you
-                  within 24 hours.
+              <div className="rounded-md border border-[#D6CAB7] bg-[#F7F5F0] p-4 flex flex-col items-center justify-center text-center">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#A8E3B5] text-[#303520]">
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <h2 className="text-lg font-medium text-[#303520]">Inquiry Received!</h2>
+                <p className="mt-2 text-sm text-[#7C826F]">
+                  Thank you, {submittedName || "there"}. We will review your details and get back to you within 24-48 hours.
                 </p>
+                <Link href="/" className="mt-6 text-xs font-bold uppercase tracking-widest text-[#7C826F] border-b border-[#7C826F]">Return Home</Link>
               </div>
             )}
           </div>
 
-          {!isSubmitted ? (
+          {!isSubmitted && (
             <div className="mt-7 flex flex-col gap-3 border-t border-[#D6CAB7] pt-5 md:flex-row md:justify-between">
               <button
                 type="button"
@@ -1300,32 +1390,27 @@ export function BookingCalendarStep({
               </button>
               <button
                 type="button"
-                disabled={!isStep5Valid || isSubmitting || !selectedDate}
+                disabled={!isContactValid || isSubmitting || !selectedDate}
                 onClick={async () => {
-                  if (!selectedDate || isSubmitting) {
-                    return;
-                  }
+                  if (!selectedDate || isSubmitting) return;
                   setSubmitError(null);
-                  setIsSubmitted(false);
                   setIsSubmitting(true);
 
                   const hoursTotal = 4 + extraHours;
-                  const drinkCountForPayload =
-                    selectedPackageId === "premium" ? additionalDrinksCount : 0;
                   const payload = {
                     date: selectedDate,
                     eventType,
                     address: venueAddress,
                     venueType,
                     guestCount: guestCountNumber,
-                    drinkCount: drinkCountForPayload,
+                    drinkCount: selectedPackageId === "premium" ? Number(additionalDrinks) : 0,
                     package: selectedPackageId,
                     cocktailNumber: totalCocktailSlots,
                     hours: hoursTotal,
                     estimatedTotal,
                     total: estimatedTotal,
                     cocktails: selectedCocktailNames,
-                    name: contactFullName,
+                    name: `${contactFirstName} ${contactLastName}`.trim(),
                     email: contactEmail,
                     phone: contactPhone,
                     note: contactNote,
@@ -1338,38 +1423,24 @@ export function BookingCalendarStep({
                     return;
                   }
 
-                  setSubmittedName(contactFullName);
-                  setContactFirstName("");
-                  setContactLastName("");
-                  setContactEmail("");
-                  setContactPhone("");
-                  setContactNote("");
+                  setSubmittedName(`${contactFirstName} ${contactLastName}`.trim());
                   setIsSubmitting(false);
                   setIsSubmitted(true);
                 }}
                 className={`rounded-md px-5 py-3 text-sm font-medium transition ${
-                  isStep5Valid && !isSubmitting
+                  isContactValid && !isSubmitting
                     ? "bg-[#7C826F] text-white hover:bg-[#6B7360]"
                     : "cursor-not-allowed bg-[#E0D9C9] text-[#A19C90]"
                 }`}
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting ? "Submitting..." : "Submit Inquiry"}
               </button>
-            </div>
-          ) : (
-            <div className="mt-7 flex flex-col gap-3 border-t border-[#D6CAB7] pt-5 md:flex-row md:items-center md:justify-between">
-              <Link
-                href="/"
-                className="rounded-md bg-[#7C826F] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#6B7360]"
-              >
-                Go to Home
-              </Link>
             </div>
           )}
 
-          {submitError && !isSubmitted ? (
-            <p className="mt-4 text-sm text-[#F3A7A7]">{submitError}</p>
-          ) : null}
+          {submitError && !isSubmitted && (
+            <p className="mt-4 text-sm text-red-500 font-bold">{submitError}</p>
+          )}
         </section>
       )}
     </main>
