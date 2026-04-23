@@ -68,7 +68,7 @@ if (imageFile.size > 512000) {
   redirect("/admin/drinks");
 }
 
-export async function updateDrinkAction(id: number, formData: FormData) {
+export async function updateDrinkAction(id: number, prevState: any, formData: FormData) {
   await requireAdmin();
 
   const alcoholTypes = formData.getAll("alcoholTypes") as string[];
@@ -120,7 +120,7 @@ export async function updateDrinkAction(id: number, formData: FormData) {
   redirect("/admin/drinks");
 }
 
-export async function deleteDrinkAction(id: number) {
+export async function deleteDrinkAction(id: number, prevState?: any) {
   await requireAdmin();
 
   try {

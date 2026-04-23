@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useActionState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { updateDrinkAction, deleteDrinkAction } from "@/features/drinks/actions";
 
 export function EditDrinkForm({ drink }: { drink: any }) {
+  const updateDrinkWithId = updateDrinkAction.bind(null, drink.id);
+  const [state, action, isPending] = useActionState(updateDrinkWithId, null);
   const [preview, setPreview] = useState<string | null>(drink.image);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,11 +37,6 @@ export function EditDrinkForm({ drink }: { drink: any }) {
     }
   };
 
-  const handleUpdate = async (formData: FormData) => {
-    const result = await updateDrinkAction(drink.id, formData);
-    if (result?.error) alert(typeof result.error === 'string' ? result.error : "Update failed.");
-  };
-
   const handleDelete = async () => {
     if (confirm("Permanently delete this drink? This cannot be undone.")) {
       const result = await deleteDrinkAction(drink.id);
@@ -48,7 +45,12 @@ export function EditDrinkForm({ drink }: { drink: any }) {
   };
 
   return (
-    <form action={handleUpdate} className="space-y-12 pb-24">
+    <form action={action} className="space-y-12 pb-24">
+      {state?.error && typeof state.error === "string" && (
+        <div className="rounded-md bg-red-50 p-4 text-sm text-red-600">
+          {state.error}
+        </div>
+      )}
       <div className="grid gap-12 md:grid-cols-2">
         <div className="space-y-10">
           <label className="block">
@@ -150,9 +152,10 @@ export function EditDrinkForm({ drink }: { drink: any }) {
           </Link>
           <button 
             type="submit" 
-            className="rounded-none bg-[#303520] px-12 py-4 text-[10px] font-bold uppercase tracking-[0.3em] text-white hover:bg-[#7C826F] transition-colors"
+            disabled={isPending}
+            className="rounded-none bg-[#303520] px-12 py-4 text-[10px] font-bold uppercase tracking-[0.3em] text-white hover:bg-[#7C826F] transition-colors disabled:bg-[#D6D5CE] disabled:cursor-not-allowed"
           >
-            Update Drink
+            {isPending ? "Updating..." : "Update Drink"}
           </button>
         </div>
       </div>
