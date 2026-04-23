@@ -1248,7 +1248,7 @@ export function BookingCalendarStep({
         </section>
       ) : (
         <section className="mx-auto mt-8 w-full max-w-5xl rounded-2xl border border-[#D6CAB7] bg-[#FDFCF8] p-5 md:p-8">
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 lg:grid-cols-2">
             <div className="rounded-md border border-[#D6CAB7] bg-[#F7F5F0] p-4">
               <h2 className="text-lg font-medium text-[#303520]">
                 Final Summary
