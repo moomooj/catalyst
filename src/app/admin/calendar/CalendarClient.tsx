@@ -162,7 +162,7 @@ export function CalendarClient({ initialBookings, initialBusyDates }: Props) {
                     return (
                       <div 
                         key={booking.id}
-                        onClick={(e) => { e.stopPropagation(); router.push(`/admin/dashboard?query=${booking.id}`); }}
+                        onClick={(e) => { e.stopPropagation(); router.push(`/admin/bookings/${booking.id}`); }}
                         className={`flex flex-col p-1 border transition-all hover:scale-[1.02] active:scale-100 shrink-0 ${
                           isCanceled ? "bg-gray-100 border-gray-300 text-gray-400 line-through opacity-50" :
                           isFullyPaid ? "bg-[#1A1C14] border-[#1A1C14] text-[#D6CAB7] shadow-md" :
