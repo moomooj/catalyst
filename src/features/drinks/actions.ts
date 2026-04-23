@@ -21,10 +21,16 @@ export async function createDrinkAction(formData: FormData) {
   if (!imageFile || imageFile.size === 0) {
     return { error: { image: ["Image file is required"] } };
   }
+// WebP 및 JPG 확장자 검증
+const allowedTypes = ["image/webp", "image/jpeg"];
+if (!allowedTypes.includes(imageFile.type)) {
+  return { error: { image: ["Only .webp or .jpg files are allowed"] } };
+}
 
-  if (imageFile.type !== "image/webp") {
-    return { error: { image: ["Only .webp files are allowed"] } };
-  }
+// 파일 용량 제한 (500KB = 512,000 bytes)
+if (imageFile.size > 512000) {
+  return { error: { image: ["File size must be less than 500KB"] } };
+}
 
   const alcoholTypes = formData.getAll("alcoholTypes") as string[];
   const data = {

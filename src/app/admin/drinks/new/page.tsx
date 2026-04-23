@@ -24,11 +24,19 @@ export default function NewDrinkPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.type !== "image/webp") {
-        alert("Please upload a .webp file only.");
+      const allowedTypes = ["image/webp", "image/jpeg"];
+      if (!allowedTypes.includes(file.type)) {
+        alert("Please upload a .webp or .jpg file only.");
         e.target.value = "";
         return;
       }
+      
+      if (file.size > 512000) {
+        alert("File size must be less than 500KB.");
+        e.target.value = "";
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -126,7 +134,7 @@ export default function NewDrinkPage() {
                     ref={fileInputRef}
                     name="image" 
                     type="file" 
-                    accept=".webp"
+                    accept=".webp, .jpg, .jpeg"
                     required 
                     onChange={handleFileChange}
                     className="absolute inset-0 z-10 cursor-pointer opacity-0"
@@ -156,8 +164,9 @@ export default function NewDrinkPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                       </svg>
                       <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#B1AA9A]">
-                        Drag WebP Image
+                        Drag WebP or JPG
                       </span>
+                      <p className="mt-1 text-[8px] text-[#B1AA9A] uppercase tracking-widest">Max 500KB</p>
                     </div>
                   )}
                 </div>
