@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useActionState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { createDrinkAction } from "@/features/drinks/actions";
 
 export default function NewDrinkPage() {
+  const [state, action, isPending] = useActionState(createDrinkAction, null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -85,7 +86,12 @@ export default function NewDrinkPage() {
           </h1>
         </header>
 
-        <form action={createDrinkAction} className="space-y-12 pb-24">
+        <form action={action} className="space-y-12 pb-24">
+          {state?.error && typeof state.error === "string" && (
+            <div className="rounded-md bg-red-50 p-4 text-sm text-red-600">
+              {state.error}
+            </div>
+          )}
           <div className="grid gap-12 md:grid-cols-2">
             <div className="space-y-10">
               <label className="block">
@@ -196,9 +202,10 @@ export default function NewDrinkPage() {
             </Link>
             <button 
               type="submit" 
-              className="rounded-none bg-[#303520] px-12 py-4 text-[10px] font-bold uppercase tracking-[0.3em] text-white hover:bg-[#7C826F] transition-colors"
+              disabled={isPending}
+              className="rounded-none bg-[#303520] px-12 py-4 text-[10px] font-bold uppercase tracking-[0.3em] text-white hover:bg-[#7C826F] transition-colors disabled:bg-[#D6D5CE] disabled:cursor-not-allowed"
             >
-              Confirm and Save
+              {isPending ? "Saving..." : "Confirm and Save"}
             </button>
           </div>
         </form>
