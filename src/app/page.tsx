@@ -8,78 +8,78 @@ const raleway = Raleway({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const AVATAR_PLACEHOLDER_SRC = "/images/prof.jpg";
-
 const testimonials = [
   {
     id: "olivia-turner",
     quote:
-      "Working with Catalyst improved our operational efficiency in ways we didn’t expect. The expert mixology and seamless navigation felt incredibly premium.",
+      "Our event felt elevated from the moment the bar opened. The cocktails were beautifully crafted and the service was seamless from start to finish.",
     name: "Olivia Turner",
-    role: "Operations Manager",
+    role: "Event Host",
+    image: "/images/testimonials/review1.jpg",
   },
   {
     id: "ethan-carter",
     quote:
-      "This solution has transformed how we manage projects. Everything feels organized, the navigation is smooth, and the service is truly exceptional.",
+      "The bartenders brought such great energy to the night. Guests kept talking about the drinks and the overall experience.",
     name: "Ethan Carter",
-    role: "Project Coordinator",
+    role: "Private Event Organizer",
+    image: "/images/testimonials/review2.jpg",
   },
   {
     id: "daniel-hart",
     quote:
-      "I appreciate how practical and thoughtfully crafted each cocktail is. It helps me break down complex event needs into meaningful insights.",
+      "Every cocktail was balanced and thoughtfully made. It really added a premium touch to our event.",
     name: "Daniel Hart",
-    role: "UX Researcher",
+    role: "Corporate Event Planner",
+    image: "/images/testimonials/review3.jpg",
   },
   {
-    id: "maria-park",
+    id: "Zoe Richardson",
     quote:
-      "The planning tools feel polished and reliable. We can move fast without sacrificing clarity or consistency across our team.",
-    name: "Maria Park",
-    role: "Client Experience Lead",
+      "Super professional team. Setup was smooth, service was fast, and everything looked amazing.",
+    name: "Zoe Richardson",
+    role: "Wedding Coordinator",
+    image: "/images/testimonials/review4.jpg",
   },
   {
     id: "jonathan-reeves",
     quote:
-      "The workflow is clean and intentional. It keeps our projects organized while still feeling premium and easy to navigate.",
+      "They made hosting effortless. The bar became the highlight of the entire night.",
     name: "Jonathan Reeves",
-    role: "Product Designer",
+    role: "Birthday Event Host",
+    image: "/images/testimonials/review5.jpg",
   },
   {
     id: "ethan-morales",
     quote:
-      "Reliable and adaptable. Our team adopted it quickly without a steep learning curve, which makes a big difference day to day.",
+      "Flexible, reliable, and easy to work with. They handled everything so we could just enjoy the event.",
     name: "Ethan Morales",
-    role: "Data Analyst",
+    role: "Event Manager",
+    image: "/images/testimonials/review6.jpg",
   },
   {
     id: "sofia-chen",
     quote:
-      "Every interaction feels considered. We’re able to deliver a calm, confident experience to our clients.",
+      "The presentation, the drinks, the vibe—everything was on point. Our guests were seriously impressed.",
     name: "Sofia Chen",
-    role: "Operations Director",
+    role: "Private Party Host",
+    image: "/images/testimonials/review7.jpg",
   },
   {
-    id: "miles-robinson",
+    id: "aria",
     quote:
-      "The platform brings structure to our planning and makes coordination smoother across departments.",
-    name: "Miles Robinson",
-    role: "Project Lead",
+      "They understood exactly what we needed and delivered beyond expectations. Highly recommend for any event.",
+    name: "Aria",
+    role: "Wedding Client",
+    image: "/images/testimonials/review8.jpg",
   },
   {
-    id: "aria-singh",
+    id: "maya-Jackson",
     quote:
-      "It’s the first time our team has felt fully aligned on process without extra overhead.",
-    name: "Aria Singh",
-    role: "Strategy Manager",
-  },
-  {
-    id: "olivia-chen",
-    quote:
-      "Working with this platform has made our process feel effortless, from planning to execution.",
-    name: "Olivia Chen",
-    role: "Operations Lead",
+      "From planning to the last drink served, everything felt effortless and well taken care of.",
+    name: "Maya Jackson",
+    role: "Event Host",
+    image: "/images/testimonials/review9.jpg",
   },
 ];
 
@@ -161,7 +161,7 @@ export default function HomePage() {
             <div className="relative md:col-span-7">
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm shadow-2xl">
                 <Image
-                  src="/images/bartender.webp"
+                  src="/images/bartender.jpg"
                   alt="Professional mixology"
                   fill
                   className="object-cover transition-transform duration-700 hover:scale-105"
@@ -169,7 +169,7 @@ export default function HomePage() {
               </div>
               <div className="absolute -bottom-10 -right-10 hidden aspect-square w-64 overflow-hidden rounded-sm border-8 border-[#FDFCFB] shadow-lg md:block">
                 <Image
-                  src="/images/party-cocktail.webp"
+                  src="/images/party-cocktail.jpg"
                   alt="Detail"
                   fill
                   className="object-cover"
@@ -221,7 +221,7 @@ export default function HomePage() {
             <div className="order-1 md:order-2 md:col-span-7">
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-sm">
                 <Image
-                  src="/images/cocktail1.webp"
+                  src="/images/cocktail1.jpg"
                   alt="Sustainably sourced ingredients"
                   fill
                   className="object-cover"
@@ -261,7 +261,7 @@ export default function HomePage() {
                 <div className="mt-10 flex items-center gap-4">
                   <div className="relative h-12 w-12 overflow-hidden rounded-full border border-[#D6CAB7]">
                     <Image
-                      src={AVATAR_PLACEHOLDER_SRC}
+                      src={item.image}
                       alt={`${item.name} avatar`}
                       fill
                       sizes="48px"
