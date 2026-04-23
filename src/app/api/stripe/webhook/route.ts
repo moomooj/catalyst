@@ -35,12 +35,11 @@ export async function POST(req: Request) {
     // Find the booking first to preserve and append to the note
     const booking = await db.booking.findUnique({
       where: { stripeCheckoutSessionId: session.id },
-      select: { id: true, note: true },
+      select: { id: true, note: true, finalPaid: true },
     });
 
     if (booking) {
       const isFinal = session.metadata?.type === "final";
-      const amountPaid = session.amount_total ? session.amount_total / 100 : 0;
 
       await db.booking.update({
         where: { id: booking.id },
