@@ -51,19 +51,19 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact / Credentials */}
           <div className="md:col-span-4">
             <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#303520]">Contact</h3>
             <div className="mt-8 space-y-6">
               <div>
                 <p className="text-sm text-[#7C826F]">General Inquiries</p>
-                <a href="mailto:hello@catalystbar.ca" className="mt-1 block text-lg font-light text-[#303520] hover:text-[#7C826F]">
-                  hello@catalystbar.ca
+                <a href="mailto:events@catalystbar.ca" className="mt-1 block text-lg font-light text-[#303520] hover:text-[#7C826F]">
+                  events@catalystbar.ca
                 </a>
+                <p className="mt-2 text-sm text-[#303520] font-medium">(778) 814-9909</p>
               </div>
               <div className="pt-6 border-t border-[#D6CAB7]/20">
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7C826F]">
-                  Vancouver, British Columbia
+                  136 W Cordova St, Vancouver, BC V6B 2N3, Canada
                 </p>
                 <p className="mt-2 text-xs text-[#A19C90]">
                   Serving It Right Certified & Fully Insured
