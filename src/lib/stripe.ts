@@ -11,7 +11,7 @@ function requireEnv(name: string): string {
 }
 
 export const stripe = new Stripe(requireEnv("STRIPE_SECRET_KEY"), {
-  apiVersion: "2024-06-20"
+  apiVersion: "2025-01-27.acacia" as any
 });
 
 export function getStripeWebhookSecret(): string {
