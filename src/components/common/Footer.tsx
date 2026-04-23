@@ -23,8 +23,7 @@ export function Footer() {
                 alt="The Catalyst Mobile Bar"
                 width={160}
                 height={34}
-                style={{ width: "auto", height: "auto" }}
-                className="max-w-[160px]"
+                className="w-[160px] h-auto"
               />            </Link>
             <p className="mt-8 max-w-sm text-base leading-relaxed text-[#7C826F]">
               Crafting sophisticated mobile bar experiences where expert mixology meets seamless, end-to-end service.

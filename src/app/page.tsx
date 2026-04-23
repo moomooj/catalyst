@@ -236,7 +236,7 @@ export default function HomePage() {
       </section>
 
       {/* 4. Testimonials - Refined Marquee */}
-      <section className="overflow-hidden py-32 md:py-48">
+      <section className="overflow-hidden pt-32 pb-16 md:pt-48 md:pb-24">
         <div className="mx-auto max-w-7xl px-6 text-center">
           <p className="mb-4 text-xs font-bold tracking-widest uppercase text-[#7C826F]">
             Kind Words
@@ -287,7 +287,7 @@ export default function HomePage() {
       </section>
 
       {/* 5. CTA Section - Minimalist & Elegant */}
-      <section className="px-6 py-32 md:py-48">
+      <section className="px-6 pt-16 pb-32 md:pt-24 md:pb-48">
         <div className="mx-auto max-w-4xl rounded-2xl border border-[#D6CAB7] bg-[#EAE8E4]/20 p-12 text-center md:p-24">
           <p className="mb-6 text-xs font-bold tracking-[0.3em] uppercase text-[#7C826F]">
             Now Booking 2024 & 2025

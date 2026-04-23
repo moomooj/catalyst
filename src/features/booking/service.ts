@@ -92,18 +92,30 @@ export async function createBookingService(
 }
 
 export async function getBusyDatesService(): Promise<{ date: string; eventType: string }[]> {
-  const bookings = await db.booking.findMany({
-    where: {
-      OR: [{ depositPaid: true }, { finalPaid: true }],
-      isActive: true,
-    },
-    select: { date: true, eventType: true },
-  });
+  const [bookings, adminBusyDates] = await Promise.all([
+    db.booking.findMany({
+      where: {
+        OR: [{ depositPaid: true }, { finalPaid: true }],
+        isActive: true,
+      },
+      select: { date: true, eventType: true },
+    }),
+    db.busyDate.findMany({
+      select: { date: true, note: true }
+    })
+  ]);
 
-  return bookings.map((b) => ({
+  const bookingDates = bookings.map((b) => ({
     date: b.date.toISOString().slice(0, 10),
     eventType: b.eventType,
   }));
+
+  const adminDates = adminBusyDates.map((b) => ({
+    date: b.date.toISOString().slice(0, 10),
+    eventType: "PRIVATE", // 어드민 차단 날짜는 프라이빗으로 표시
+  }));
+
+  return [...bookingDates, ...adminDates];
 }
 
 export type BookingDashboardItem = {
@@ -759,5 +771,32 @@ export async function syncBookingPaymentStatusService(bookingId: number): Promis
         }
       });
     }
-  } catch (error) { console.error("[sync-error]", error); }
+  } catch (error) {
+    console.error("[sync-error]", error);
+  }
+}
+
+export async function toggleBusyDateService(dateStr: string) {
+  // YYYY-MM-DD 형식을 직접 쪼개어 로컬 타임존 기준으로 생성
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const date = new Date(year, month - 1, day, 0, 0, 0, 0);
+
+  const existing = await db.busyDate.findUnique({
+    where: { date }
+  });
+
+  if (existing) {
+    await db.busyDate.delete({ where: { id: existing.id } });
+    return { ok: true, status: "removed" };
+  } else {
+    await db.busyDate.create({
+      data: { date }
+    });
+    return { ok: true, status: "added" };
+  }
+}
+
+export async function listAllBusyDatesService() {
+  const dates = await db.busyDate.findMany();
+  return dates.map(d => d.date.toISOString().split("T")[0]);
 }

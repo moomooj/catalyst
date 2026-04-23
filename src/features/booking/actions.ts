@@ -26,6 +26,7 @@ import {
   sendBookingPaymentLinkService,
   sendCustomDepositInvoiceService,
   sendFinalBalanceInvoiceService,
+  toggleBusyDateService,
   updateBookingService,
 } from "./service";
 import type { Result } from "./types";
@@ -272,4 +273,12 @@ export async function lookupBookingAction(formData: FormData) {
     }
     return { ok: false, error: "An error occurred while retrieving your booking." };
   }
+}
+
+export async function toggleBusyDateAction(dateStr: string) {
+  await requireAdmin();
+  const result = await toggleBusyDateService(dateStr);
+  revalidatePath("/admin/calendar");
+  revalidatePath("/booking");
+  return result;
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, transition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toggleBusyDateAction } from "@/features/booking/actions";
 
 type BookingSummary = {
   id: number;
-  date: Date;
+  date: string | Date;
   name: string;
   eventType: string;
   status: string;
@@ -14,6 +15,7 @@ type BookingSummary = {
 
 type Props = {
   initialBookings: BookingSummary[];
+  initialBusyDates: string[];
 };
 
 const MONTHS = [
@@ -21,9 +23,10 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December"
 ];
 
-export function CalendarClient({ initialBookings }: Props) {
+export function CalendarClient({ initialBookings, initialBusyDates }: Props) {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [isToggling, setIsToggling] = useState(false);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -51,10 +54,6 @@ export function CalendarClient({ initialBookings }: Props) {
     setCurrentDate(new Date(year, month + offset, 1));
   };
 
-  const changeYear = (newYear: number) => {
-    setCurrentDate(new Date(newYear, month, 1));
-  };
-
   const getBookingsForDate = (date: Date) => {
     return initialBookings.filter(b => {
       const bDate = new Date(b.date);
@@ -64,98 +63,140 @@ export function CalendarClient({ initialBookings }: Props) {
     });
   };
 
+  const toLocalDateString = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const isDateBusy = (date: Date) => {
+    const dateStr = toLocalDateString(date);
+    return initialBusyDates.includes(dateStr);
+  };
+
+  const handleDateClick = async (date: Date, hasBookings: boolean) => {
+    if (hasBookings) return; // 예약이 있으면 차단 불가
+    if (isToggling) return;
+
+    setIsToggling(true);
+    const dateStr = toLocalDateString(date);
+    
+    try {
+      await toggleBusyDateAction(dateStr);
+      router.refresh(); // 최신 데이터 반영
+    } catch (err) {
+      alert("Failed to update date status.");
+    } finally {
+      setIsToggling(false);
+    }
+  };
+
   const yearOptions = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 2 + i);
-  const sectionTitleClass = "text-xs font-medium uppercase tracking-[0.24em] text-[#7C826F]";
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-10">
       <header className="flex flex-wrap items-end justify-between gap-6 border-b border-[#D6D5CE] pb-8">
         <div className="space-y-1">
-          <p className={sectionTitleClass}>Administration</p>
-          <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">Booking Calendar</h1>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#7C826F]">Administration</p>
+          <h1 className="text-4xl font-light tracking-tight text-[#303520] md:text-5xl">Calendar</h1>
         </div>
-        <Link href="/admin/dashboard" className="rounded-full border border-[#7C826F] px-5 py-2 text-xs font-medium text-[#7C826F] transition hover:bg-white">Back to Dashboard</Link>
+        <Link href="/admin/dashboard" className="rounded-none border border-[#7C826F] px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#7C826F] transition-all hover:bg-[#7C826F] hover:text-white">Dashboard</Link>
       </header>
 
-      <section className="flex flex-wrap items-center justify-between gap-4 bg-white border border-[#D9D4C7] p-6 shadow-sm">
+      <section className="flex flex-wrap items-center justify-between gap-4 bg-white border border-[#D6CAB7] p-6 shadow-sm">
         <div className="flex items-center gap-4">
-          <button onClick={() => changeMonth(-1)} className="p-2 text-[#7C826F] hover:bg-[#FDFCF8] rounded-full transition">&larr;</button>
-          <h2 className="text-xl font-bold tracking-tight min-w-[200px] text-center text-[#303520]">{MONTHS[month]} {year}</h2>
-          <button onClick={() => changeMonth(1)} className="p-2 text-[#7C826F] hover:bg-[#FDFCF8] rounded-full transition">&rarr;</button>
+          <button onClick={() => changeMonth(-1)} className="p-2 text-[#7C826F] hover:bg-[#F9F8F6] transition">&larr;</button>
+          <h2 className="text-xl font-light tracking-tight min-w-[200px] text-center text-[#303520] uppercase">{MONTHS[month]} {year}</h2>
+          <button onClick={() => changeMonth(1)} className="p-2 text-[#7C826F] hover:bg-[#F9F8F6] transition">&rarr;</button>
         </div>
-        <div className="flex items-center gap-2">
-          <select value={month} onChange={(e) => setCurrentDate(new Date(year, Number(e.target.value), 1))} className="rounded-md border border-[#D6CAB7] bg-[#FDFCF8] px-3 py-2 text-sm text-[#303520] focus:outline-none">
-            {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
-          </select>
-          <select value={year} onChange={(e) => changeYear(Number(e.target.value))} className="rounded-md border border-[#D6CAB7] bg-[#FDFCF8] px-3 py-2 text-sm text-[#303520] focus:outline-none">
-            {yearOptions.map(y => <option key={y} value={y}>{y}</option>)}
-          </select>
-          <button onClick={() => setCurrentDate(new Date())} className="ml-2 rounded-full bg-[#7C826F] px-4 py-2 text-xs font-medium text-white hover:bg-[#6B7360]">Today</button>
+        <div className="flex items-center gap-4">
+          <div className="flex gap-2">
+            <select value={month} onChange={(e) => setCurrentDate(new Date(year, Number(e.target.value), 1))} className="rounded-none border border-[#D6CAB7] bg-white px-3 py-2 text-[10px] font-bold uppercase text-[#303520] focus:outline-none">
+              {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
+            </select>
+            <select value={year} onChange={(e) => setCurrentDate(new Date(Number(e.target.value), month, 1))} className="rounded-none border border-[#D6CAB7] bg-white px-3 py-2 text-[10px] font-bold uppercase text-[#303520] focus:outline-none">
+              {yearOptions.map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
+          <button onClick={() => setCurrentDate(new Date())} className="rounded-none bg-[#303520] px-6 py-2 text-[10px] font-bold uppercase text-white hover:bg-[#7C826F] transition-all">Today</button>
         </div>
       </section>
 
-      <section className="border border-[#D9D4C7] bg-white shadow-xl overflow-hidden rounded-lg">
-        <div className="grid grid-cols-7 text-center bg-[#D6D5CE]">
+      <div className="border border-[#D6CAB7] bg-white shadow-xl overflow-hidden">
+        <div className="grid grid-cols-7 text-center bg-[#F9F8F6] border-b border-[#D6CAB7]">
           {daysOfWeek.map((day) => (
-            <div key={day} className="py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[#7C826F] border-r border-[#D9D4C7]/50 last:border-r-0">{day}</div>
+            <div key={day} className="py-4 text-[10px] font-bold uppercase tracking-[0.3em] text-[#7C826F]">{day}</div>
           ))}
         </div>
 
-        <div className="grid grid-cols-7 border-b border-[#D9D4C7]">
+        <div className="grid grid-cols-7">
           {calendarDays.map((dateObj, i) => {
             const isToday = new Date().toDateString() === dateObj.fullDate.toDateString();
             const bookingsOnThisDate = getBookingsForDate(dateObj.fullDate);
             const hasBookings = bookingsOnThisDate.length > 0;
+            const busy = isDateBusy(dateObj.fullDate);
             
             return (
-              <div key={i} className={`min-h-[160px] p-2 border-r border-b border-[#D9D4C7] transition group relative ${!dateObj.currentMonth ? "bg-[#F7F5F0]/30" : hasBookings ? "bg-[#FDFCF8]" : "bg-white"}`}>
+              <div 
+                key={i} 
+                onClick={() => handleDateClick(dateObj.fullDate, hasBookings)}
+                className={`min-h-[160px] p-2 border-r border-b border-[#F5F2F0] transition group relative cursor-pointer ${
+                  !dateObj.currentMonth ? "bg-[#F9F8F6]/30 opacity-40" : 
+                  busy ? "bg-[#F5F2F0]" : 
+                  hasBookings ? "bg-[#FDFCFB]" : "bg-white hover:bg-[#FDFCFB]"
+                }`}
+              >
                 <div className="flex justify-between items-start mb-2 p-1">
-                  <span className={`text-[11px] font-bold ${!dateObj.currentMonth ? "text-[#D6D5CE]" : isToday ? "bg-[#303520] text-white h-6 w-6 flex items-center justify-center rounded-full shadow-md" : "text-[#7C826F]"}`}>
+                  <span className={`text-[11px] font-bold ${
+                    !dateObj.currentMonth ? "text-[#D6D5CE]" : 
+                    isToday ? "bg-[#7C826F] text-white h-6 w-6 flex items-center justify-center shadow-md" : "text-[#B1AA9A]"
+                  }`}>
                     {dateObj.day}
                   </span>
-                  {isToday && <span className="text-[8px] font-bold uppercase text-[#7C826F] tracking-tighter">Today</span>}
+                  {busy && <span className="text-[7px] font-bold uppercase text-[#7C826F] bg-white px-1.5 py-0.5 border border-[#D6CAB7]">Private</span>}
                 </div>
                 
                 <div className="space-y-1.5 overflow-y-auto max-h-[110px] custom-scrollbar px-1">
                   {bookingsOnThisDate.map(booking => {
                     const isFullyPaid = booking.status === "CONFIRMED" || booking.status === "DEPOSIT_PAID";
                     const isCanceled = booking.status === "CANCELED";
-                    const isNew = booking.status === "NEW";
                     
                     return (
                       <div 
                         key={booking.id}
-                        onClick={() => router.push(`/admin/bookings/${booking.id}`)}
-                        className={`flex flex-col p-2 rounded-md shadow-sm border transition cursor-pointer hover:scale-[1.02] active:scale-100 ${
+                        onClick={(e) => { e.stopPropagation(); router.push(`/admin/bookings/${booking.id}`); }}
+                        className={`flex flex-col p-2 border transition cursor-pointer hover:shadow-md ${
                           isCanceled ? "bg-gray-50 border-gray-200 text-gray-400 line-through opacity-60" :
                           isFullyPaid ? "bg-[#303520] border-[#303520] text-[#EAE8E4]" :
-                          isNew ? "bg-[#FDFCF8] border-[#7C826F] text-[#303520]" :
-                          "bg-[#7C826F] border-[#7C826F] text-white"
+                          "bg-white border-[#D6CAB7] text-[#303520]"
                         }`}
                       >
-                        <div className="flex items-center justify-between gap-1">
-                          <span className="truncate text-[10px] font-bold leading-tight">{booking.name}</span>
-                          {isFullyPaid && <svg className="h-2.5 w-2.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
-                        </div>
-                        <div className={`mt-0.5 text-[8px] font-bold uppercase tracking-wider ${isFullyPaid ? "text-[#7C826F]" : "text-[#7C826F]"}`}>
-                          {booking.status.replace('_', ' ')}
+                        <span className="truncate text-[10px] font-bold uppercase tracking-tight">{booking.name}</span>
+                        <div className="mt-0.5 text-[7px] font-bold uppercase tracking-widest opacity-70">
+                          {booking.status}
                         </div>
                       </div>
                     );
                   })}
+                  {busy && !hasBookings && (
+                    <div className="h-full flex items-center justify-center pt-8">
+                       <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#B1AA9A]">Schedule Blocked</p>
+                    </div>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
-      </section>
+      </div>
 
-      <footer className="flex flex-wrap items-center gap-x-8 gap-y-4 bg-white/50 p-6 rounded-lg border border-[#D9D4C7] text-[10px] font-bold uppercase tracking-widest text-[#7C826F]">
-        <div className="flex items-center gap-2"><div className="h-4 w-4 bg-[#303520] rounded-sm shadow-sm"></div><span>Confirmed / Deposit Paid</span></div>
-        <div className="flex items-center gap-2"><div className="h-4 w-4 bg-[#7C826F] rounded-sm shadow-sm"></div><span>Checked</span></div>
-        <div className="flex items-center gap-2"><div className="h-4 w-4 bg-[#FDFCF8] border border-[#7C826F] rounded-sm shadow-sm"></div><span>New Inquiry</span></div>
-        <div className="flex items-center gap-2"><div className="h-4 w-4 bg-gray-50 border border-gray-200 rounded-sm opacity-60"></div><span className="text-gray-400">Canceled</span></div>
+      <footer className="flex flex-wrap items-center gap-x-10 gap-y-4 bg-white p-8 border border-[#D6CAB7] text-[10px] font-bold uppercase tracking-[0.2em] text-[#7C826F]">
+        <div className="flex items-center gap-3"><div className="h-3 w-3 bg-[#303520]"></div><span>Booked & Paid</span></div>
+        <div className="flex items-center gap-3"><div className="h-3 w-3 border border-[#D6CAB7]"></div><span>Pending</span></div>
+        <div className="flex items-center gap-3"><div className="h-3 w-3 bg-[#F5F2F0] border border-[#D6CAB7]"></div><span>Admin Blocked (Private)</span></div>
+        <p className="ml-auto text-[#B1AA9A] font-normal italic lowercase">Tip: Click an empty date to toggle private block.</p>
       </footer>
     </div>
   );
