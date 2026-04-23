@@ -46,9 +46,6 @@ export function Footer() {
                 <Link href="/services" className="text-sm text-[#7C826F] transition hover:text-[#303520]">Services</Link>
               </li>
               <li>
-                <Link href="/planning" className="text-sm text-[#7C826F] transition hover:text-[#303520]">Planning Guide</Link>
-              </li>
-              <li>
                 <Link href="/booking" className="text-sm text-[#7C826F] transition hover:text-[#303520]">Book Inquiry</Link>
               </li>
             </ul>
