@@ -1314,7 +1314,7 @@ export function BookingCalendarStep({
                   Contact Details
                 </h2>
                 <div className="mt-3 grid gap-3">
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-3 lg:grid-cols-2">
                     <label className="grid gap-1 text-sm text-[#7C826F]">
                       First Name
                       <input
