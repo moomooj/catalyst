@@ -14,7 +14,7 @@ const drinkSchema = z.object({
   alcoholTypes: z.array(z.enum(["TEQUILA", "RUM", "GIN", "VODKA", "WHISKEY"])).min(1, "Select at least one alcohol type"),
 });
 
-export async function createDrinkAction(formData: FormData) {
+export async function createDrinkAction(prevState: any, formData: FormData) {
   await requireAdmin();
 
   const imageFile = formData.get("image") as File;
