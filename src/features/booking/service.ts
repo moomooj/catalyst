@@ -127,7 +127,7 @@ export type BookingDashboardItem = {
   drinkCount: number;
   perDrinkPrice: number;
   package: string;
-  status: "NEW" | "QUOTED" | "CONFIRMED" | "CANCELED";
+  status: "NEW" | "CHECKED" | "DEPOSIT_PAID" | "CONFIRMED" | "CANCELED";
   cocktailNumber: number;
   hours: number;
   name: string;
@@ -140,7 +140,7 @@ export type BookingDashboardItem = {
 };
 
 export type BookingListFilters = {
-  status?: "NEW" | "QUOTED" | "CONFIRMED" | "CANCELED";
+  status?: "NEW" | "CHECKED" | "DEPOSIT_PAID" | "CONFIRMED" | "CANCELED";
   depositPaid?: boolean;
   finalPaid?: boolean;
   dateFrom?: Date;
@@ -261,7 +261,7 @@ export type BookingDetail = {
   email: string;
   phone: string;
   note: string | null;
-  status: "NEW" | "QUOTED" | "CONFIRMED" | "CANCELED";
+  status: "NEW" | "CHECKED" | "DEPOSIT_PAID" | "CONFIRMED" | "CANCELED";
   eventsPermit: boolean;
   depositPaid: boolean;
   finalPaid: boolean;
