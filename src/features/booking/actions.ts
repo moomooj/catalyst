@@ -289,3 +289,23 @@ export async function toggleBusyDateAction(dateStr: string) {
   revalidatePath("/booking");
   return result;
 }
+
+export async function restoreBookingAction(prevState: any, formData: FormData): Promise<Result<{ id: number }>> {
+  await requireAdmin();
+  const bookingId = Number(formData.get("id"));
+
+  if (!bookingId || isNaN(bookingId)) {
+    return { ok: false, error: "Invalid booking ID." };
+  }
+
+  try {
+    const { restoreBookingService } = await import("./service");
+    await restoreBookingService(bookingId);
+    revalidatePath("/admin/trash");
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/calendar");
+    return { ok: true, data: { id: bookingId } };
+  } catch (err) {
+    return { ok: false, error: "Failed to restore booking." };
+  }
+}

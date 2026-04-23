@@ -149,6 +149,7 @@ export type BookingListFilters = {
   query?: string;
   page?: number;
   pageSize?: number;
+  isActive?: boolean;
 };
 
 export async function listBookingsForDashboard(
@@ -157,10 +158,11 @@ export async function listBookingsForDashboard(
   const pageSize = Math.max(1, Math.min(filters.pageSize ?? 20, 100));
   const page = Math.max(1, filters.page ?? 1);
   const skip = (page - 1) * pageSize;
+  const isActive = filters.isActive !== undefined ? filters.isActive : true;
 
   return db.booking.findMany({
     where: {
-      isActive: true,
+      isActive: isActive,
       ...(filters.status ? { status: filters.status } : {}),
       ...(typeof filters.depositPaid === "boolean"
         ? { depositPaid: filters.depositPaid }
@@ -177,9 +179,12 @@ export async function listBookingsForDashboard(
       ...(filters.query
         ? {
             OR: [
-              { name: { contains: filters.query } },
-              { email: { contains: filters.query } },
-              { phone: { contains: filters.query } },
+              { name: { contains: filters.query, mode: "insensitive" } },
+              { email: { contains: filters.query, mode: "insensitive" } },
+              { phone: { contains: filters.query, mode: "insensitive" } },
+              ...(isNaN(Number(filters.query.replace("#", "")))
+                ? []
+                : [{ id: { equals: Number(filters.query.replace("#", "")) } }]),
             ],
           }
         : {}),
@@ -213,9 +218,10 @@ export async function listBookingsForDashboard(
 export async function countBookingsForDashboard(
   filters: BookingListFilters = {},
 ): Promise<number> {
+  const isActive = filters.isActive !== undefined ? filters.isActive : true;
   return db.booking.count({
     where: {
-      isActive: true,
+      isActive: isActive,
       ...(filters.status ? { status: filters.status } : {}),
       ...(typeof filters.depositPaid === "boolean"
         ? { depositPaid: filters.depositPaid }
@@ -232,9 +238,12 @@ export async function countBookingsForDashboard(
       ...(filters.query
         ? {
             OR: [
-              { name: { contains: filters.query } },
-              { email: { contains: filters.query } },
-              { phone: { contains: filters.query } },
+              { name: { contains: filters.query, mode: "insensitive" } },
+              { email: { contains: filters.query, mode: "insensitive" } },
+              { phone: { contains: filters.query, mode: "insensitive" } },
+              ...(isNaN(Number(filters.query.replace("#", "")))
+                ? []
+                : [{ id: { equals: Number(filters.query.replace("#", "")) } }]),
             ],
           }
         : {}),
@@ -799,4 +808,29 @@ export async function toggleBusyDateService(dateStr: string) {
 export async function listAllBusyDatesService() {
   const dates = await db.busyDate.findMany();
   return dates.map(d => d.date.toISOString().split("T")[0]);
+}
+
+export async function restoreBookingService(id: number) {
+  return db.booking.update({
+    where: { id },
+    data: { isActive: true },
+    select: { id: true }
+  });
+}
+
+export async function listDeletedBookings() {
+  return db.booking.findMany({
+    where: { isActive: false },
+    orderBy: { updatedAt: "desc" },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      date: true,
+      eventType: true,
+      total: true,
+      status: true,
+      updatedAt: true
+    }
+  });
 }

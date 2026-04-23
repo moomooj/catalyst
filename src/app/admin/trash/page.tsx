@@ -3,8 +3,8 @@ import {
   countBookingsForDashboard,
   listBookingsForDashboard,
 } from "@/features/booking/service";
-import { BookingRow } from "./BookingRow";
-import { BookingFilters } from "./BookingFilters";
+import { BookingRow } from "../dashboard/BookingRow";
+import { BookingFilters } from "../dashboard/BookingFilters";
 import Link from "next/link";
 
 type PageProps = {
@@ -12,17 +12,13 @@ type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function AdminDashboardPage({ params, searchParams }: PageProps) {
+export default async function AdminTrashPage({ params, searchParams }: PageProps) {
   await requireAdmin();
   const [sParams, _] = await Promise.all([searchParams, params]);
   const currentPage = Number(sParams.page) || 1;
   const statusParam = sParams.status as any;
   const sortParam = (sParams.sort as "asc" | "desc") || "desc";
   const queryParam = sParams.query as string;
-  const showPast = sParams.past === "1";
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
 
   const filters = {
     status: statusParam,
@@ -30,10 +26,7 @@ export default async function AdminDashboardPage({ params, searchParams }: PageP
     query: queryParam,
     page: currentPage,
     pageSize: 20,
-    ...(showPast 
-      ? { dateTo: new Date(today.getTime() - 1) } 
-      : { dateFrom: today }
-    )
+    isActive: false, // 휴지통이므로 비활성화된 데이터만
   };
 
   const [bookings, totalCount] = await Promise.all([
@@ -49,9 +42,8 @@ export default async function AdminDashboardPage({ params, searchParams }: PageP
     if (statusParam) current.set("status", statusParam);
     if (sortParam !== "desc") current.set("sort", sortParam);
     if (queryParam) current.set("query", queryParam);
-    if (showPast) current.set("past", "1");
     Object.entries(newParams).forEach(([k, v]) => current.set(k, v));
-    return `/admin/dashboard?${current.toString()}`;
+    return `/admin/trash?${current.toString()}`;
   };
 
   const sectionTitleClass = "text-xs font-medium uppercase tracking-[0.24em] text-[#7C826F]";
@@ -63,28 +55,8 @@ export default async function AdminDashboardPage({ params, searchParams }: PageP
           <div className="space-y-1">
             <p className={sectionTitleClass}>Administration</p>
             <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              Dashboard
+              Trash
             </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex overflow-hidden rounded-full border border-[#D6CAB7] bg-white p-1">
-              <Link
-                href="/admin/dashboard"
-                className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-                  !showPast ? "bg-[#7C826F] text-white" : "text-[#7C826F] hover:bg-[#EAE8E4]"
-                }`}
-              >
-                Upcoming
-              </Link>
-              <Link
-                href="/admin/dashboard?past=1"
-                className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-                  showPast ? "bg-[#7C826F] text-white" : "text-[#7C826F] hover:bg-[#EAE8E4]"
-                }`}
-              >
-                Past Events
-              </Link>
-            </div>
           </div>
         </header>
 
@@ -93,11 +65,12 @@ export default async function AdminDashboardPage({ params, searchParams }: PageP
             initialQuery={queryParam} 
             initialStatus={statusParam} 
             initialSort={sortParam} 
+            baseUrl="/admin/trash"
           />
 
           {bookings.length === 0 ? (
             <div className="mt-8 rounded-none border border-dashed border-[#D6CAB7] bg-white/50 p-12 text-center text-sm text-[#7C826F]">
-              No bookings found.
+              No deleted bookings found.
             </div>
           ) : (
             <div className="mt-6 overflow-x-auto border border-[#D9D4C7] bg-white shadow-sm">
@@ -119,6 +92,7 @@ export default async function AdminDashboardPage({ params, searchParams }: PageP
                     <BookingRow 
                       key={booking.id} 
                       booking={booking} 
+                      isTrash={true}
                     />
                   ))}
                 </tbody>
