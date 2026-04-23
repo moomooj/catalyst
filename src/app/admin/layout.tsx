@@ -40,6 +40,11 @@ export default function AdminLayout({
     return <div className={raleway.className}>{children}</div>;
   }
 
+  // 로그인 페이지에서는 레이아웃 제외
+  if (pathname === "/admin/login") {
+    return <div className={raleway.className}>{children}</div>;
+  }
+
   return (
     <div className={`${raleway.className} flex min-h-screen bg-[#FDFCFB] text-[#303520]`}>
       {/* Sidebar Navigation */}

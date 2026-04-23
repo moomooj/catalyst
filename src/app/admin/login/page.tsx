@@ -99,8 +99,8 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="min-h-dvh bg-[#EAE8E4] px-6 py-12 text-[#303520]">
-      <div className="mx-auto w-full max-w-md rounded-none bg-[#D6D5CE] p-8 shadow-sm">
+    <main className="flex min-h-dvh items-center justify-center bg-[#EAE8E4] px-6 py-12 text-[#303520]">
+      <div className="w-full max-w-md border border-[#D6CAB7] bg-white p-10 shadow-xl animate-in fade-in zoom-in-95 duration-700">
         <div className="mb-6">
           <p className="text-xs font-medium uppercase tracking-[0.24em] text-[#7C826F]">
             Login
