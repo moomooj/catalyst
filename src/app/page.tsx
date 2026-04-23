@@ -89,7 +89,7 @@ export default function HomePage() {
       {/* 1. Hero Section - Full Screen Editorial */}
       <section className="relative h-screen w-full overflow-hidden">
         <Image
-          src="/images/hero-cocktail1.png"
+          src="/images/hero-cocktail.jpg"
           alt="Premium cocktail experience"
           fill
           priority
@@ -111,8 +111,18 @@ export default function HomePage() {
               className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-white/30 bg-white/10 px-8 py-4 text-sm font-medium backdrop-blur-md transition hover:bg-white hover:text-[#303520]"
             >
               Check Availability
-              <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              <svg
+                className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
               </svg>
             </Link>
           </div>
@@ -130,12 +140,14 @@ export default function HomePage() {
           </p>
           <h2 className="max-w-4xl text-4xl leading-tight font-light text-[#303520] md:text-6xl">
             Expert mixology meets <br className="hidden md:block" />
-            <span className="text-[#7C826F]">seamless, end-to-end service.</span>
+            <span className="text-[#7C826F]">
+              seamless, end-to-end service.
+            </span>
           </h2>
           <p className="mt-12 max-w-xl text-lg leading-relaxed text-[#7C826F]">
-            We craft lasting impressions through sophisticated mobile bar experiences. 
-            From intimate weddings to large-scale brand events, we manage every detail 
-            so you can focus on the moment.
+            We craft lasting impressions through sophisticated mobile bar
+            experiences. From intimate weddings to large-scale brand events, we
+            manage every detail so you can focus on the moment.
           </p>
           <div className="mt-16 h-px w-24 bg-[#D6CAB7]" />
         </div>
@@ -149,14 +161,19 @@ export default function HomePage() {
             <div className="relative md:col-span-7">
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm shadow-2xl">
                 <Image
-                  src="/images/bartender.png"
+                  src="/images/bartender.webp"
                   alt="Professional mixology"
                   fill
                   className="object-cover transition-transform duration-700 hover:scale-105"
                 />
               </div>
               <div className="absolute -bottom-10 -right-10 hidden aspect-square w-64 overflow-hidden rounded-sm border-8 border-[#FDFCFB] shadow-lg md:block">
-                <Image src="/images/cocktail1.jpg" alt="Detail" fill className="object-cover" />
+                <Image
+                  src="/images/party-cocktail.webp"
+                  alt="Detail"
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
 
@@ -166,14 +183,18 @@ export default function HomePage() {
                 Tailored Experience
               </p>
               <h3 className="text-3xl font-light leading-snug text-[#303520] md:text-4xl">
-                Designed around your flow, guest comfort, and <span className="italic">premium presentation</span>.
+                Designed around your flow, guest comfort, and{" "}
+                <span className="italic">premium presentation</span>.
               </h3>
               <p className="mt-8 text-base leading-relaxed text-[#7C826F]">
-                Our mobile bar isn't just a service—it's a curated environment. 
-                We adapt to your venue, your theme, and your guest list to 
+                Our mobile bar isn't just a service—it's a curated environment.
+                We adapt to your venue, your theme, and your guest list to
                 deliver a truly unique experience.
               </p>
-              <Link href="/services" className="mt-10 inline-block border-b border-[#303520] pb-1 text-sm font-semibold tracking-wide uppercase transition hover:text-[#7C826F] hover:border-[#7C826F]">
+              <Link
+                href="/services"
+                className="mt-10 inline-block border-b border-[#303520] pb-1 text-sm font-semibold tracking-wide uppercase transition hover:text-[#7C826F] hover:border-[#7C826F]"
+              >
                 Explore Services
               </Link>
             </div>
@@ -186,12 +207,13 @@ export default function HomePage() {
                 Sustainability
               </p>
               <h3 className="text-3xl font-light leading-snug text-[#303520] md:text-4xl">
-                Pure care, by nature. Crafted with <span className="italic">intentionality</span>.
+                Pure care, by nature. Crafted with{" "}
+                <span className="italic">intentionality</span>.
               </h3>
               <p className="mt-8 text-base leading-relaxed text-[#7C826F]">
-                We prioritize fresh, locally sourced ingredients and sustainable practices. 
-                Our team handles everything from custom cocktail design to permit management 
-                with zero stress for you.
+                We prioritize fresh, locally sourced ingredients and sustainable
+                practices. Our team handles everything from custom cocktail
+                design to permit management with zero stress for you.
               </p>
             </div>
 
@@ -199,7 +221,7 @@ export default function HomePage() {
             <div className="order-1 md:order-2 md:col-span-7">
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-sm">
                 <Image
-                  src="/images/cocktail2.jpg"
+                  src="/images/cocktail1.webp"
                   alt="Sustainably sourced ingredients"
                   fill
                   className="object-cover"
@@ -229,7 +251,9 @@ export default function HomePage() {
                 className="flex h-full w-[300px] flex-col justify-between border-r border-[#D6CAB7]/30 px-10 md:w-[400px]"
               >
                 <div>
-                  <div className="text-4xl text-[#D6CAB7]/50 font-serif leading-none">“</div>
+                  <div className="text-4xl text-[#D6CAB7]/50 font-serif leading-none">
+                    “
+                  </div>
                   <p className="mt-4 text-lg font-light leading-relaxed text-[#303520]">
                     {item.quote}
                   </p>
@@ -240,6 +264,7 @@ export default function HomePage() {
                       src={AVATAR_PLACEHOLDER_SRC}
                       alt={`${item.name} avatar`}
                       fill
+                      sizes="48px"
                       className="object-cover grayscale"
                     />
                   </div>
@@ -247,7 +272,9 @@ export default function HomePage() {
                     <p className="text-sm font-semibold tracking-wide text-[#303520]">
                       {item.name}
                     </p>
-                    <p className="text-xs uppercase tracking-wider text-[#7C826F]">{item.role}</p>
+                    <p className="text-xs uppercase tracking-wider text-[#7C826F]">
+                      {item.role}
+                    </p>
                   </div>
                 </div>
               </article>
@@ -263,11 +290,12 @@ export default function HomePage() {
             Now Booking 2024 & 2025
           </p>
           <h2 className="text-4xl font-light text-[#303520] md:text-6xl">
-            Ready to <span className="italic">Elevate</span> <br className="hidden md:block" /> Your Next Event?
+            Ready to <span className="italic">Elevate</span>{" "}
+            <br className="hidden md:block" /> Your Next Event?
           </h2>
           <p className="mx-auto mt-8 max-w-md text-base leading-relaxed text-[#7C826F]">
-            Confirm your date with a simple 5-step inquiry. We'll follow up within 
-            24–48 hours to craft your custom experience.
+            Confirm your date with a simple 5-step inquiry. We'll follow up
+            within 24–48 hours to craft your custom experience.
           </p>
           <div className="mt-12">
             <Link
