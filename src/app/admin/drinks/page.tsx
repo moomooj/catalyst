@@ -95,7 +95,7 @@ export default async function AdminDrinksPage() {
                             />
                             {/* 다중 알코올 태그 표시 */}
                             <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
-                              {(drink.alcoholTypes as string[] || [drink.alcoholType]).map(t => (
+                              {(drink.alcoholTypes as string[] || []).map(t => (
                                 <span key={t} className="bg-white/90 px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-widest text-[#7C826F] border border-[#D6CAB7]/30">
                                   {alcoholLabels[t] || t}
                                 </span>
