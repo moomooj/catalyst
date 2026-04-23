@@ -98,10 +98,10 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-black/10" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
-          <p className="mb-6 text-[10px] md:text-xs font-medium tracking-[0.4em] uppercase text-white/80">
+          <p className="mb-6 text-[10px] sm:text-xs md:text-sm font-medium tracking-[0.4em] uppercase text-white/80">
             Est. 2024 — Catalyst Mobile Bar
           </p>
-          <h1 className="max-w-4xl text-4xl sm:text-5xl font-light leading-tight tracking-tight lg:text-8xl">
+          <h1 className="max-w-4xl text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-light leading-tight tracking-tight">
             The Art of the <br />
             <span className="italic font-normal">Perfect Pour</span>
           </h1>
@@ -138,13 +138,13 @@ export default function HomePage() {
           <p className="mb-8 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase text-[#7C826F]">
             Our Philosophy
           </p>
-          <h2 className="max-w-4xl text-3xl sm:text-4xl leading-tight font-light text-[#303520] lg:text-6xl">
-            Expert mixology meets <br className="hidden lg:block" />
+          <h2 className="max-w-4xl text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight font-light text-[#303520]">
+            Expert mixology meets <br className="hidden md:block" />
             <span className="text-[#7C826F]">
               seamless, end-to-end service.
             </span>
           </h2>
-          <p className="mt-10 lg:mt-12 max-w-xl text-base lg:text-lg leading-relaxed text-[#7C826F]">
+          <p className="mt-10 lg:mt-12 max-w-xl text-base md:text-lg lg:text-xl leading-relaxed text-[#7C826F]">
             We craft lasting impressions through sophisticated mobile bar
             experiences. From intimate weddings to large-scale brand events, we
             manage every detail so you can focus on the moment.
@@ -181,14 +181,14 @@ export default function HomePage() {
 
             {/* Text Block 1 */}
             <div className="lg:col-span-5 lg:pl-10">
-              <p className="mb-4 text-xs font-bold tracking-widest uppercase text-[#7C826F]">
+              <p className="mb-4 text-[10px] md:text-xs font-bold tracking-widest uppercase text-[#7C826F]">
                 Tailored Experience
               </p>
-              <h3 className="text-3xl font-light leading-snug text-[#303520] lg:text-4xl">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-light leading-snug text-[#303520]">
                 Designed around your flow, guest comfort, and{" "}
                 <span className="italic">premium presentation</span>.
               </h3>
-              <p className="mt-8 text-base leading-relaxed text-[#7C826F]">
+              <p className="mt-8 text-base md:text-lg leading-relaxed text-[#7C826F]">
                 Our mobile bar isn't just a service—it's a curated environment.
                 We adapt to your venue, your theme, and your guest list to
                 deliver a truly unique experience.
@@ -205,14 +205,14 @@ export default function HomePage() {
           <div className="mt-24 lg:mt-32 grid gap-16 lg:gap-20 lg:grid-cols-12 lg:items-center">
             {/* Text Block 2 */}
             <div className="order-2 lg:order-1 lg:col-span-5 lg:pr-10">
-              <p className="mb-4 text-xs font-bold tracking-widest uppercase text-[#7C826F]">
+              <p className="mb-4 text-[10px] md:text-xs font-bold tracking-widest uppercase text-[#7C826F]">
                 Sustainability
               </p>
-              <h3 className="text-3xl font-light leading-snug text-[#303520] lg:text-4xl">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-light leading-snug text-[#303520]">
                 Pure care, by nature. Crafted with{" "}
                 <span className="italic">intentionality</span>.
               </h3>
-              <p className="mt-8 text-base leading-relaxed text-[#7C826F]">
+              <p className="mt-8 text-base md:text-lg leading-relaxed text-[#7C826F]">
                 We prioritize fresh, locally sourced ingredients and sustainable
                 practices. Our team handles everything from custom cocktail
                 design to permit management with zero stress for you.
@@ -238,10 +238,10 @@ export default function HomePage() {
       {/* 4. Testimonials - Refined Marquee */}
       <section className="overflow-hidden pt-24 pb-12 lg:pt-48 lg:pb-24">
         <div className="mx-auto max-w-7xl px-6 text-center">
-          <p className="mb-4 text-xs font-bold tracking-widest uppercase text-[#7C826F]">
+          <p className="mb-4 text-[10px] md:text-xs font-bold tracking-widest uppercase text-[#7C826F]">
             Kind Words
           </p>
-          <h2 className="text-3xl font-light text-[#303520] lg:text-5xl">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-[#303520]">
             Trusted by professionals.
           </h2>
         </div>
@@ -254,28 +254,28 @@ export default function HomePage() {
                 className="flex h-full w-[280px] flex-col justify-between border-r border-[#D6CAB7]/30 px-8 md:w-[350px] lg:w-[400px] lg:px-10"
               >
                 <div>
-                  <div className="text-3xl lg:text-4xl text-[#D6CAB7]/50 font-serif leading-none">
+                  <div className="text-3xl md:text-4xl text-[#D6CAB7]/50 font-serif leading-none">
                     “
                   </div>
-                  <p className="mt-4 text-base lg:text-lg font-light leading-relaxed text-[#303520]">
+                  <p className="mt-4 text-base md:text-lg lg:text-xl font-light leading-relaxed text-[#303520]">
                     {item.quote}
                   </p>
                 </div>
                 <div className="mt-8 lg:mt-10 flex items-center gap-4">
-                  <div className="relative h-10 w-10 lg:h-12 lg:w-12 overflow-hidden rounded-full border border-[#D6CAB7]">
+                  <div className="relative h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 overflow-hidden rounded-full border border-[#D6CAB7]">
                     <Image
                       src={item.image}
                       alt={`${item.name} avatar`}
                       fill
-                      sizes="48px"
+                      sizes="64px"
                       className="object-cover"
                     />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold tracking-wide text-[#303520]">
+                    <p className="text-sm md:text-base font-semibold tracking-wide text-[#303520]">
                       {item.name}
                     </p>
-                    <p className="text-[10px] lg:text-xs uppercase tracking-wider text-[#7C826F]">
+                    <p className="text-[10px] md:text-xs uppercase tracking-wider text-[#7C826F]">
                       {item.role}
                     </p>
                   </div>
@@ -292,11 +292,11 @@ export default function HomePage() {
           <p className="mb-6 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase text-[#7C826F]">
             Now Booking 2024 & 2025
           </p>
-          <h2 className="text-3xl sm:text-4xl font-light text-[#303520] lg:text-6xl">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-[#303520]">
             Ready to <span className="italic">Elevate</span>{" "}
-            <br className="hidden lg:block" /> Your Next Event?
+            <br className="hidden md:block" /> Your Next Event?
           </h2>
-          <p className="mx-auto mt-8 max-w-md text-sm lg:text-base leading-relaxed text-[#7C826F]">
+          <p className="mx-auto mt-8 max-w-md text-sm md:text-base lg:text-lg leading-relaxed text-[#7C826F]">
             Confirm your date with a simple 5-step inquiry. We'll follow up
             within 24–48 hours to craft your custom experience.
           </p>
