@@ -32,7 +32,7 @@ export function EmailActions({ bookingId, totalWithTax, defaultDeposit, isPaid, 
     formData.append("id", String(bookingId));
     formData.append("amount", String(numAmount));
 
-    const result = await sendCustomDepositInvoiceAction(formData);
+    const result = await sendCustomDepositInvoiceAction(null, formData);
     if (result.ok) {
       setMessage({ type: "success", text: "Deposit invoice sent successfully!" });
     } else {
@@ -50,7 +50,7 @@ export function EmailActions({ bookingId, totalWithTax, defaultDeposit, isPaid, 
     const formData = new FormData();
     formData.append("id", String(bookingId));
 
-    const result = await sendFinalBalanceInvoiceAction(formData);
+    const result = await sendFinalBalanceInvoiceAction(null, formData);
     if (result.ok) {
       setMessage({ type: "success", text: "Final balance invoice sent successfully!" });
     } else {

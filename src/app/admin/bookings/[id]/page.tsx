@@ -52,7 +52,7 @@ export default async function BookingDetailPage({
 
   async function saveBooking(formData: FormData) {
     "use server";
-    const result = await updateBookingAction(formData);
+    const result = await updateBookingAction(null, formData);
     if (result.ok) {
       redirect(`/admin/bookings/${bookingId}`);
     }

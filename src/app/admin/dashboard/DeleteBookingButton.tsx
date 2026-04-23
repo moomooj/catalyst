@@ -17,7 +17,7 @@ export function DeleteBookingButton({ bookingId, bookingName }: Props) {
     const formData = new FormData();
     formData.append("id", String(bookingId));
 
-    const result = await deleteBookingAction(formData);
+    const result = await deleteBookingAction(null, formData);
     if (!result.ok) {
       alert(result.error);
       setIsDeleting(false);

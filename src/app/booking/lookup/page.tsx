@@ -34,7 +34,7 @@ export default function BookingLookupPage() {
             <h1 className="text-3xl font-light tracking-tight text-[#303520]">Look up your <br/><span className="italic font-normal">Inquiry</span></h1>
           </header>
 
-          <form action={lookupBookingAction} className="space-y-8">
+          <form action={lookupBookingAction.bind(null, null)} className="space-y-8">
             <div className="space-y-6">
               <label className="block group">
                 <span className="text-[9px] font-bold uppercase tracking-widest text-[#B1AA9A] group-focus-within:text-[#7C826F] transition-colors mb-2 block">Booking Number</span>
