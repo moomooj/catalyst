@@ -369,7 +369,7 @@ export function BookingCalendarStep({
     const nextItem: CocktailMenuItem = {
       id: nextId,
       name,
-      image: "/images/cocktails/signature-lookbook.svg",
+      image: "/images/request-cocktail.jpg",
     };
 
     setCustomCocktailItems((prev) => [...prev, nextItem]);
@@ -407,7 +407,7 @@ export function BookingCalendarStep({
   }, [isEventTypeOpen]);
 
   return (
-    <main className="min-h-dvh bg-[#EAE8E4] px-6 py-6 text-[#303520] md:px-10 md:py-8">
+    <main className="min-h-dvh bg-[#FDFCFB] px-6 py-6 text-[#303520] md:px-10 md:py-8">
       <section className={`mx-auto flex w-full max-w-5xl transition-all duration-500 ${currentStep === 5 ? "justify-center mb-16" : "mb-2"}`}>
         <Link
           href="/"
