@@ -419,7 +419,8 @@ export function BookingCalendarStep({
             alt="The Catalyst Mobile Bar"
             width={160}
             height={34}
-            className="h-auto w-[160px]"
+            style={{ width: "auto", height: "auto" }}
+            className="h-auto w-[140px] md:w-[160px]"
             priority
           />
         </Link>

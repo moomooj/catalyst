@@ -21,6 +21,7 @@ export default function BookingLookupPage() {
               alt="The Catalyst Mobile Bar"
               width={160}
               height={34}
+              style={{ height: "auto" }}
               priority
             />
           </Link>

@@ -1,9 +1,0 @@
-<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1200" height="900" fill="#1A1A1D"/>
-  <rect x="80" y="80" width="1040" height="740" rx="28" fill="#2B2B31"/>
-  <circle cx="600" cy="430" r="210" fill="#C5A059"/>
-  <circle cx="600" cy="430" r="145" fill="#F3EFE0"/>
-  <rect x="410" y="210" width="380" height="34" rx="10" fill="#F5F2E8" fill-opacity="0.8"/>
-  <rect x="470" y="650" width="260" height="24" rx="8" fill="#F5F2E8" fill-opacity="0.55"/>
-  <text x="445" y="720" fill="#D2B06B" font-size="34" font-family="Georgia, serif">Catalyst Cocktail</text>
-</svg>

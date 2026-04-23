@@ -82,7 +82,7 @@ export default async function BookingConfirmationPage({ params, searchParams }: 
           {/* Top Info Bar */}
           <div className="flex justify-between items-center px-10 py-6 bg-[#303520] text-white shrink-0">
              <div className="flex items-center gap-10">
-               <Image src="/images/catalyst-bar-white.png" alt="Catalyst" width={120} height={26} />
+               <Image src="/images/catalyst-bar-white.png" alt="Catalyst" width={120} height={26} style={{ width: "auto", height: "auto" }} />
                <div className="h-4 w-px bg-white/30 hidden md:block" />
                <p className="text-[10px] font-bold uppercase tracking-[0.4em] hidden md:block opacity-80">Premium Mobile Bar Experience</p>
              </div>

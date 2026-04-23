@@ -164,6 +164,7 @@ export default function HomePage() {
                   src="/images/bartender.jpg"
                   alt="Professional mixology"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover transition-transform duration-700 hover:scale-105"
                 />
               </div>
@@ -172,6 +173,7 @@ export default function HomePage() {
                   src="/images/party-cocktail.jpg"
                   alt="Detail"
                   fill
+                  sizes="256px"
                   className="object-cover"
                 />
               </div>
@@ -224,6 +226,7 @@ export default function HomePage() {
                   src="/images/cocktail1.jpg"
                   alt="Sustainably sourced ingredients"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
                 />
               </div>
@@ -265,7 +268,7 @@ export default function HomePage() {
                       alt={`${item.name} avatar`}
                       fill
                       sizes="48px"
-                      className="object-cover grayscale"
+                      className="object-cover"
                     />
                   </div>
                   <div>

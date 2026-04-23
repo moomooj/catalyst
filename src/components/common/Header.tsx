@@ -55,7 +55,8 @@ export function Header() {
               alt="The Catalyst Mobile Bar"
               width={160}
               height={34}
-              className="h-auto w-[140px] transition-all duration-300 md:w-[160px]"
+              style={{ width: "auto", height: "auto" }}
+              className="max-w-[140px] transition-all duration-300 md:max-w-[160px]"
               priority
             />
           </Link>
@@ -125,6 +126,7 @@ export function Header() {
               alt="The Catalyst Mobile Bar"
               width={140}
               height={30}
+              style={{ width: "auto", height: "auto" }}
               priority
             />
             <button onClick={closeMenu} className="text-[#7C826F] hover:text-[#303520]">

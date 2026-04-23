@@ -37,6 +37,7 @@ export default async function BookingSuccessPage({ searchParams }: SuccessPagePr
               alt="The Catalyst Mobile Bar"
               width={180}
               height={38}
+              style={{ height: "auto" }}
               priority
             />
           </Link>
