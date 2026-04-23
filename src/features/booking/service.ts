@@ -673,8 +673,12 @@ function generateInvoiceHtml(booking: any, amountToPay: number, paymentTitle: st
             </div>
           </div>
         </div>
-        <div style="text-align:center; margin-top:32px; font-size:12px; color:#7C826F;">
+        <div style="text-align:center; margin-top:32px; font-size:11px; color:#7C826F;">
           <p>© ${new Date().getFullYear()} Catalyst Mobile Bar. All rights reserved.</p>
+          <div style="margin-top:12px;">
+            <a href="${getAppBaseUrl()}/privacy" style="color:#7C826F; text-decoration:underline; margin:0 8px;">Privacy Policy</a>
+            <a href="${getAppBaseUrl()}/terms" style="color:#7C826F; text-decoration:underline; margin:0 8px;">Terms of Service</a>
+          </div>
         </div>
       </div>
     </div>
