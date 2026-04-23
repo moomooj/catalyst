@@ -21,6 +21,12 @@ pnpm-debug.log*
 # env files
 .env*
 
+# documentation & config
+PFS.md
+PRD.md
+.cursorrules
+*guideline.md
+
 # typescript
 *.tsbuildinfo
 
