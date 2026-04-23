@@ -2,6 +2,8 @@ import { CalendarClient } from "./CalendarClient";
 import { db } from "@/lib/db";
 import { listAllBusyDatesService } from "@/features/booking/service";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Calendar | Admin Dashboard",
 };
@@ -9,6 +11,7 @@ export const metadata = {
 export default async function AdminCalendarPage() {
   const [bookings, busyDates] = await Promise.all([
     db.booking.findMany({
+      where: { isActive: true },
       select: {
         id: true,
         date: true,
