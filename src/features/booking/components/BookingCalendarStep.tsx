@@ -1381,7 +1381,7 @@ export function BookingCalendarStep({
           </div>
 
           {!isSubmitted && (
-            <div className="mt-7 flex flex-col gap-8 border-t border-[#D6CAB7] pt-8 md:flex-row md:justify-between md:items-center">
+            <div className="mt-7 flex flex-col gap-4 border-t border-[#D6CAB7] pt-8 md:flex-row md:justify-between md:items-center">
               <button
                 type="button"
                 onClick={() => setCurrentStep(4)}
@@ -1390,7 +1390,7 @@ export function BookingCalendarStep({
                 Back
               </button>
 
-              <div className="flex flex-col items-start gap-4 md:flex-row-reverse md:items-center md:gap-6">
+              <div className="flex w-full flex-col gap-4 md:w-auto md:flex-row-reverse md:items-center md:gap-6">
                 <button
                   type="button"
                   disabled={!isStep5Valid || isSubmitting || !selectedDate}
@@ -1429,7 +1429,7 @@ export function BookingCalendarStep({
                     // 성공 시 전용 확인 페이지로 이동 (인증용 이메일 포함)
                     router.push(`/booking/confirmation/${result.data.id}?auth=${encodeURIComponent(contactEmail)}`);
                   }}
-                  className={`rounded-md px-8 py-3 text-sm font-medium transition whitespace-nowrap ${
+                  className={`w-full rounded-md px-8 py-3 text-sm font-medium transition md:w-auto ${
                     isStep5Valid && !isSubmitting
                       ? "bg-[#7C826F] text-white hover:bg-[#6B7360]"
                       : "cursor-not-allowed bg-[#E0D9C9] text-[#A19C90]"
@@ -1437,7 +1437,7 @@ export function BookingCalendarStep({
                 >
                   {isSubmitting ? "Submitting..." : "Submit"}
                 </button>
-                <p className="text-[10px] text-[#B1AA9A] leading-relaxed max-w-[280px]">
+                <p className="text-[10px] text-[#B1AA9A] leading-relaxed md:max-w-[280px] md:text-right">
                   By submitting this form, you agree to our{" "}
                   <Link href="/privacy" target="_blank" className="underline hover:text-[#7C826F] transition-colors">
                     Privacy Policy
