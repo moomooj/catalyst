@@ -60,7 +60,7 @@ export default async function AdminDrinksPage() {
               // (Json 데이터이므로 Array.isArray 체크 및 타입 가드 필요)
               const drinksByType = allDrinks.filter(d => {
                 const types = d.alcoholTypes as string[];
-                return Array.isArray(types) ? types.includes(type) : d.alcoholType === type;
+                return Array.isArray(types) ? types.includes(type) : d.alcoholTypes === type;
               });
               
               return (
