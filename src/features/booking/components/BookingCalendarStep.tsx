@@ -1423,8 +1423,8 @@ export function BookingCalendarStep({
                     return;
                   }
 
-                  // 성공 시 전용 확인 페이지로 이동
-                  router.push(`/booking/confirmation/${result.data.id}`);
+                  // 성공 시 전용 확인 페이지로 이동 (인증용 이메일 포함)
+                  router.push(`/booking/confirmation/${result.data.id}?auth=${encodeURIComponent(contactEmail)}`);
                 }}
                 className={`rounded-md px-5 py-3 text-sm font-medium transition ${
                   isStep5Valid && !isSubmitting

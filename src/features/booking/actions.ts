@@ -2,6 +2,8 @@
 
 import { requireAdmin } from "@/lib/auth/admin";
 import { revalidatePath } from "next/cache";
+import { db } from "@/lib/db";
+import { redirect } from "next/navigation";
 import {
   ALL_INCLUSIVE_MIN_COCKTAIL_COUNT,
   ALL_INCLUSIVE_MIN_HOURS,
@@ -240,4 +242,34 @@ export async function sendFinalBalanceInvoiceAction(
   }
 
   return sendFinalBalanceInvoiceService(bookingId);
+}
+
+export async function lookupBookingAction(formData: FormData) {
+  const bookingIdStr = formData.get("bookingId") as string;
+  const email = (formData.get("email") as string)?.trim().toLowerCase();
+
+  const bookingId = parseInt(bookingIdStr?.replace("#", "") || "");
+
+  if (isNaN(bookingId) || !email) {
+    return { ok: false, error: "Invalid booking number or email address." };
+  }
+
+  try {
+    const booking = await db.booking.findUnique({
+      where: { id: bookingId },
+      select: { id: true, email: true }
+    });
+
+    if (!booking || booking.email.trim().toLowerCase() !== email) {
+      return { ok: false, error: "No matching reservation found with these details." };
+    }
+
+    // 성공 시 이메일을 키로 사용하여 상세 페이지로 리다이렉트
+    redirect(`/booking/confirmation/${booking.id}?auth=${encodeURIComponent(email)}`);
+  } catch (err) {
+    if (err instanceof Error && (err.message.includes("NEXT_REDIRECT") || (err as any).digest?.includes("NEXT_REDIRECT"))) {
+      throw err;
+    }
+    return { ok: false, error: "An error occurred while retrieving your booking." };
+  }
 }

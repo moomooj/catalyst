@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getBookingById } from "@/features/booking/service";
 import { db } from "@/lib/db";
 import { Raleway } from "next/font/google";
+import { redirect } from "next/navigation";
 
 const raleway = Raleway({
   subsets: ["latin"],
@@ -13,18 +14,26 @@ const raleway = Raleway({
 
 type Props = {
   params: Promise<{ bookingId: string }>;
+  searchParams: Promise<{ auth?: string }>;
 };
 
-export default async function BookingConfirmationPage({ params }: Props) {
-  const resolvedParams = await params;
+export default async function BookingConfirmationPage({ params, searchParams }: Props) {
+  const [resolvedParams, resolvedSearchParams] = await Promise.all([params, searchParams]);
   const bookingId = parseInt(resolvedParams.bookingId);
+  const authKey = resolvedSearchParams.auth?.trim().toLowerCase();
 
   if (isNaN(bookingId)) notFound();
 
   const booking = await getBookingById(bookingId);
   if (!booking) notFound();
 
-  // 모든 음료 정보를 가져와서 매칭
+  // 보안 검증: URL의 이메일 키와 예약 이메일이 일치해야 함
+  if (!authKey || booking.email.trim().toLowerCase() !== authKey) {
+    redirect("/booking/lookup");
+  }
+
+  // 모든 음료 정보를 가져와서 매칭 (하이볼 계산용)
+
   const allDrinksInDb = await db.drink.findMany({
     select: { name: true, alcoholTypes: true }
   });
