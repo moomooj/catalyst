@@ -1381,60 +1381,73 @@ export function BookingCalendarStep({
           </div>
 
           {!isSubmitted && (
-            <div className="mt-7 flex flex-col gap-3 border-t border-[#D6CAB7] pt-5 md:flex-row md:justify-between">
+            <div className="mt-7 flex flex-col gap-8 border-t border-[#D6CAB7] pt-8 md:flex-row md:justify-between md:items-center">
               <button
                 type="button"
                 onClick={() => setCurrentStep(4)}
-                className="rounded-md border border-[#D6CAB7] px-5 py-3 text-sm text-[#7C826F] transition hover:bg-[#EFECE6]"
+                className="rounded-md border border-[#D6CAB7] px-5 py-3 text-sm text-[#7C826F] transition hover:bg-[#EFECE6] shrink-0"
               >
                 Back
               </button>
-              <button
-                type="button"
-                disabled={!isStep5Valid || isSubmitting || !selectedDate}
-                onClick={async () => {
-                  if (!selectedDate || isSubmitting) return;
-                  setSubmitError(null);
-                  setIsSubmitting(true);
 
-                  const hoursTotal = 4 + extraHours;
-                  const payload = {
-                    date: selectedDate,
-                    eventType,
-                    address: venueAddress,
-                    venueType,
-                    guestCount: guestCountNumber,
-                    drinkCount: selectedPackageId === "premium" ? Number(additionalDrinks) : 0,
-                    package: selectedPackageId,
-                    cocktailNumber: totalCocktailSlots,
-                    hours: hoursTotal,
-                    estimatedTotal,
-                    total: estimatedTotal,
-                    cocktails: selectedCocktailNames,
-                    name: `${contactFirstName} ${contactLastName}`.trim(),
-                    email: contactEmail,
-                    phone: contactPhone,
-                    note: contactNote,
-                  };
+              <div className="flex flex-col items-start gap-4 md:flex-row-reverse md:items-center md:gap-6">
+                <button
+                  type="button"
+                  disabled={!isStep5Valid || isSubmitting || !selectedDate}
+                  onClick={async () => {
+                    if (!selectedDate || isSubmitting) return;
+                    setSubmitError(null);
+                    setIsSubmitting(true);
 
-                  const result = await createBookingAction(null, payload);
-                  if (!result.ok) {
-                    setSubmitError(result.error);
-                    setIsSubmitting(false);
-                    return;
-                  }
+                    const hoursTotal = 4 + extraHours;
+                    const payload = {
+                      date: selectedDate,
+                      eventType,
+                      address: venueAddress,
+                      venueType,
+                      guestCount: guestCountNumber,
+                      drinkCount: selectedPackageId === "premium" ? Number(additionalDrinks) : 0,
+                      package: selectedPackageId,
+                      cocktailNumber: totalCocktailSlots,
+                      hours: hoursTotal,
+                      estimatedTotal,
+                      total: estimatedTotal,
+                      cocktails: selectedCocktailNames,
+                      name: `${contactFirstName} ${contactLastName}`.trim(),
+                      email: contactEmail,
+                      phone: contactPhone,
+                      note: contactNote,
+                    };
 
-                  // 성공 시 전용 확인 페이지로 이동 (인증용 이메일 포함)
-                  router.push(`/booking/confirmation/${result.data.id}?auth=${encodeURIComponent(contactEmail)}`);
-                }}
-                className={`rounded-md px-5 py-3 text-sm font-medium transition ${
-                  isStep5Valid && !isSubmitting
-                    ? "bg-[#7C826F] text-white hover:bg-[#6B7360]"
-                    : "cursor-not-allowed bg-[#E0D9C9] text-[#A19C90]"
-                }`}
-              >
-                {isSubmitting ? "Submitting..." : "Submit Inquiry"}
-              </button>
+                    const result = await createBookingAction(null, payload);
+                    if (!result.ok) {
+                      setSubmitError(result.error);
+                      setIsSubmitting(false);
+                      return;
+                    }
+
+                    // 성공 시 전용 확인 페이지로 이동 (인증용 이메일 포함)
+                    router.push(`/booking/confirmation/${result.data.id}?auth=${encodeURIComponent(contactEmail)}`);
+                  }}
+                  className={`rounded-md px-8 py-3 text-sm font-medium transition whitespace-nowrap ${
+                    isStep5Valid && !isSubmitting
+                      ? "bg-[#7C826F] text-white hover:bg-[#6B7360]"
+                      : "cursor-not-allowed bg-[#E0D9C9] text-[#A19C90]"
+                  }`}
+                >
+                  {isSubmitting ? "Submitting..." : "Submit"}
+                </button>
+                <p className="text-[10px] text-[#B1AA9A] leading-relaxed max-w-[280px]">
+                  By submitting this form, you agree to our{" "}
+                  <Link href="/privacy" target="_blank" className="underline hover:text-[#7C826F] transition-colors">
+                    Privacy Policy
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/terms" target="_blank" className="underline hover:text-[#7C826F] transition-colors">
+                    Terms of Service
+                  </Link>.
+                </p>
+              </div>
             </div>
           )}
 
