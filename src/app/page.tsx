@@ -254,15 +254,15 @@ export default function HomePage() {
                 className="flex h-full w-[280px] flex-col justify-between border-r border-[#D6CAB7]/30 px-8 md:w-[350px] lg:w-[400px] lg:px-10"
               >
                 <div>
-                  <div className="text-3xl md:text-4xl text-[#D6CAB7]/50 font-serif leading-none">
+                  <div className="text-2xl md:text-3xl text-[#D6CAB7]/50 font-serif leading-none">
                     “
                   </div>
-                  <p className="mt-4 text-base md:text-lg lg:text-xl font-light leading-relaxed text-[#303520]">
+                  <p className="mt-4 text-sm md:text-base lg:text-lg font-light leading-relaxed text-[#303520]">
                     {item.quote}
                   </p>
                 </div>
                 <div className="mt-8 lg:mt-10 flex items-center gap-4">
-                  <div className="relative h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 overflow-hidden rounded-full border border-[#D6CAB7]">
+                  <div className="relative h-10 w-10 lg:h-12 lg:w-12 overflow-hidden rounded-full border border-[#D6CAB7]">
                     <Image
                       src={item.image}
                       alt={`${item.name} avatar`}
@@ -272,10 +272,10 @@ export default function HomePage() {
                     />
                   </div>
                   <div>
-                    <p className="text-sm md:text-base font-semibold tracking-wide text-[#303520]">
+                    <p className="text-xs md:text-sm font-semibold tracking-wide text-[#303520]">
                       {item.name}
                     </p>
-                    <p className="text-[10px] md:text-xs uppercase tracking-wider text-[#7C826F]">
+                    <p className="text-[9px] md:text-[10px] uppercase tracking-wider text-[#7C826F]">
                       {item.role}
                     </p>
                   </div>
