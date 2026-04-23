@@ -7,13 +7,13 @@ import { BookingRow } from "./BookingRow";
 import Link from "next/link";
 
 type PageProps = {
+  params: Promise<any>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function AdminDashboardPage({ params, searchParams }: any) {
+export default async function AdminDashboardPage({ params, searchParams }: PageProps) {
   await requireAdmin();
-
-  const sParams = await searchParams;
+  const [sParams, _] = await Promise.all([searchParams, params]);
   const currentPage = Number(sParams.page) || 1;
   const statusParam = sParams.status as any;
   const sortParam = (sParams.sort as "asc" | "desc") || "desc";

@@ -5,7 +5,7 @@ import { adminLoginSchema } from "./schema";
 import { loginAdminService } from "./service";
 import type { Result } from "./types";
 
-export async function loginAdminAction(input: unknown): Promise<Result<null>> {
+export async function loginAdminAction(prevState: any, input: unknown): Promise<Result<null>> {
   const parsed = adminLoginSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: "Validation failed.", code: "VALIDATION_FAILED" };

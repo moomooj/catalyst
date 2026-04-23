@@ -32,6 +32,7 @@ import {
 import type { Result } from "./types";
 
 export async function createBookingAction(
+  prevState: any,
   input: unknown,
 ): Promise<Result<{ id: number }>> {
   const parsed = bookingCreateSchema.safeParse(input);
@@ -59,6 +60,7 @@ function readInt(formData: FormData, key: string, fallback: number): number {
 }
 
 export async function updateBookingAction(
+  prevState: any,
   formData: FormData,
 ): Promise<Result<{ id: number }>> {
   await requireAdmin();
@@ -172,6 +174,7 @@ export async function updateBookingAction(
 }
 
 export async function deleteBookingAction(
+  prevState: any,
   formData: FormData,
 ): Promise<Result<{ id: number }>> {
   await requireAdmin();
@@ -189,6 +192,7 @@ export async function deleteBookingAction(
 }
 
 export async function sendBookingEmailAction(
+  prevState: any,
   formData: FormData,
 ): Promise<Result<{ id: number }>> {
   await requireAdmin();
@@ -202,6 +206,7 @@ export async function sendBookingEmailAction(
 }
 
 export async function sendBookingPaymentLinkAction(
+  prevState: any,
   formData: FormData,
 ): Promise<Result<{ id: number }>> {
   await requireAdmin();
@@ -215,6 +220,7 @@ export async function sendBookingPaymentLinkAction(
 }
 
 export async function sendCustomDepositInvoiceAction(
+  prevState: any,
   formData: FormData,
 ): Promise<Result<{ id: number }>> {
   await requireAdmin();
@@ -233,6 +239,7 @@ export async function sendCustomDepositInvoiceAction(
 }
 
 export async function sendFinalBalanceInvoiceAction(
+  prevState: any,
   formData: FormData,
 ): Promise<Result<{ id: number }>> {
   await requireAdmin();
@@ -245,7 +252,7 @@ export async function sendFinalBalanceInvoiceAction(
   return sendFinalBalanceInvoiceService(bookingId);
 }
 
-export async function lookupBookingAction(formData: FormData) {
+export async function lookupBookingAction(prevState: any, formData: FormData) {
   const bookingIdStr = formData.get("bookingId") as string;
   const email = (formData.get("email") as string)?.trim().toLowerCase();
 

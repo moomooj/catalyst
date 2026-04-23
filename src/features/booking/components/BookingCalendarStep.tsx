@@ -1417,7 +1417,7 @@ export function BookingCalendarStep({
                     note: contactNote,
                   };
 
-                  const result = await createBookingAction(payload);
+                  const result = await createBookingAction(null, payload);
                   if (!result.ok) {
                     setSubmitError(result.error);
                     setIsSubmitting(false);
