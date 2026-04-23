@@ -33,9 +33,6 @@ export function Footer() {
               <a href="#" className="text-[#7C826F] transition hover:text-[#303520]">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Instagram</span>
               </a>
-              <a href="#" className="text-[#7C826F] transition hover:text-[#303520]">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Facebook</span>
-              </a>
             </div>
           </div>
 

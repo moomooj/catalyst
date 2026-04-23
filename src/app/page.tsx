@@ -279,13 +279,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Footer - Minimal */}
-      <footer className="border-t border-[#D6CAB7]/30 py-12 text-center">
-        <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-[#A19C90]">
-          © 2024 Catalyst Mobile Bar. Crafted with care.
-        </p>
-      </footer>
     </main>
   );
 }

@@ -46,7 +46,7 @@ const packageOptions = [
         id: "standard-base",
         label: "Dry hire",
         totalPrice: 1000,
-        includedCocktails: 0,
+        includedCocktails: 2,
       },
     ],
   },
