@@ -1,3 +1,4 @@
+import { useActionState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { lookupBookingAction } from "@/features/booking/actions";
@@ -10,6 +11,8 @@ const raleway = Raleway({
 });
 
 export default function BookingLookupPage() {
+  const [state, action, isPending] = useActionState(lookupBookingAction, null);
+
   return (
     <main className={`${raleway.className} min-h-screen bg-[#EAE8E4] px-6 py-20 text-[#303520] flex flex-col items-center justify-center`}>
       <div className="w-full max-w-lg flex flex-col items-center">
@@ -34,7 +37,12 @@ export default function BookingLookupPage() {
             <h1 className="text-3xl font-light tracking-tight text-[#303520]">Look up your <br/><span className="italic font-normal">Inquiry</span></h1>
           </header>
 
-          <form action={lookupBookingAction.bind(null, null)} className="space-y-8">
+          <form action={action} className="space-y-8">
+            {state?.error && (
+              <div className="rounded-md bg-red-50 p-4 text-xs text-red-600">
+                {state.error}
+              </div>
+            )}
             <div className="space-y-6">
               <label className="block group">
                 <span className="text-[9px] font-bold uppercase tracking-widest text-[#B1AA9A] group-focus-within:text-[#7C826F] transition-colors mb-2 block">Booking Number</span>
@@ -62,9 +70,10 @@ export default function BookingLookupPage() {
             <div className="pt-6">
               <button
                 type="submit"
-                className="w-full bg-[#303520] py-4 text-[10px] font-bold uppercase tracking-[0.4em] text-white hover:bg-[#7C826F] transition-all shadow-lg active:scale-[0.98]"
+                disabled={isPending}
+                className="w-full bg-[#303520] py-4 text-[10px] font-bold uppercase tracking-[0.4em] text-white hover:bg-[#7C826F] transition-all shadow-lg active:scale-[0.98] disabled:bg-[#D6D5CE] disabled:cursor-not-allowed"
               >
-                Find My Booking
+                {isPending ? "Searching..." : "Find My Booking"}
               </button>
             </div>
           </form>

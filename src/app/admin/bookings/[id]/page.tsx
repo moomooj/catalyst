@@ -50,7 +50,7 @@ export default async function BookingDetailPage({
   const isEditMode = resolvedSearchParams?.edit === "1";
   const saveError = resolvedSearchParams?.error;
 
-  async function saveBooking(formData: FormData) {
+  async function saveBooking(formData: FormData): Promise<void> {
     "use server";
     const result = await updateBookingAction(null, formData);
     if (result.ok) {
