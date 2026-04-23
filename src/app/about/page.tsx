@@ -16,21 +16,21 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <main className={`${raleway.className} bg-[#FDFCFB] text-[#303520]`}>
+    <main className={`${raleway.className} bg-[#FDFCFB] text-[#303520] overflow-x-hidden w-full`}>
       {/* 1. Header Section */}
-      <section className="mx-auto max-w-7xl px-6 pt-32 pb-20 md:pt-48 md:pb-32">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between">
+      <section className="mx-auto max-w-7xl px-6 pt-32 pb-20 lg:pt-48 lg:pb-32">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <p className="mb-6 text-xs font-bold tracking-[0.3em] uppercase text-[#7C826F]">
+            <p className="mb-6 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase text-[#7C826F]">
               Our Story
             </p>
-            <h1 className="text-5xl font-light leading-tight tracking-tight text-[#303520] md:text-8xl">
+            <h1 className="text-4xl sm:text-5xl font-light leading-tight tracking-tight text-[#303520] lg:text-8xl">
               We craft atmosphere, <br />
               <span className="italic font-normal">not just cocktails.</span>
             </h1>
           </div>
-          <div className="mt-8 md:mt-0">
-            <div className="h-px w-24 bg-[#D6CAB7] hidden md:block" />
+          <div className="mt-8 lg:mt-0">
+            <div className="h-px w-24 bg-[#D6CAB7] hidden lg:block" />
           </div>
         </div>
       </section>
@@ -38,24 +38,25 @@ export default function AboutPage() {
       {/* 2. Philosophy Section with Image */}
       <section className="px-6 py-20 bg-[#EAE8E4]/30">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-20 md:grid-cols-12 md:items-center">
-            <div className="md:col-span-6">
+          <div className="grid gap-12 lg:gap-20 lg:grid-cols-12 lg:items-center">
+            <div className="lg:col-span-6">
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm shadow-xl">
                 <Image
                   src="/images/hospitality.jpg"
                   alt="Crafting the perfect atmosphere"
                   fill
                   className="object-cover"
+                  priority
                 />
               </div>
             </div>
-            <div className="md:col-span-6 md:pl-10">
-              <h2 className="text-3xl font-light leading-relaxed md:text-5xl">
+            <div className="lg:col-span-6 lg:pl-10">
+              <h2 className="text-3xl font-light leading-relaxed lg:text-5xl">
                 Founded on the belief that{" "}
                 <span className="text-[#7C826F]">hospitality</span> is an art
                 form.
               </h2>
-              <p className="mt-10 text-lg leading-relaxed text-[#7C826F]">
+              <p className="mt-8 lg:mt-10 text-base lg:text-lg leading-relaxed text-[#7C826F]">
                 Catalyst Mobile Bar was born to elevate celebrations through
                 refined visual storytelling and flawless execution. We don't
                 just set up a bar; we create a destination within your event—a
@@ -68,9 +69,9 @@ export default function AboutPage() {
       </section>
 
       {/* 3. Three Pillars Section */}
-      <section className="mx-auto max-w-7xl px-6 py-32 md:py-48">
-        <div className="grid gap-16 md:grid-cols-3">
-          <div className="space-y-6">
+      <section className="mx-auto max-w-7xl px-6 py-24 lg:py-48">
+        <div className="grid gap-12 lg:gap-16 lg:grid-cols-3">
+          <div className="space-y-4 lg:space-y-6">
             <span className="text-xs font-bold tracking-widest text-[#D6CAB7]">
               01
             </span>
@@ -83,7 +84,7 @@ export default function AboutPage() {
               than competing with it.
             </p>
           </div>
-          <div className="space-y-6">
+          <div className="space-y-4 lg:space-y-6">
             <span className="text-xs font-bold tracking-widest text-[#D6CAB7]">
               02
             </span>
@@ -96,7 +97,7 @@ export default function AboutPage() {
               of the Pacific Northwest.
             </p>
           </div>
-          <div className="space-y-6">
+          <div className="space-y-4 lg:space-y-6">
             <span className="text-xs font-bold tracking-widest text-[#D6CAB7]">
               03
             </span>
@@ -113,11 +114,11 @@ export default function AboutPage() {
       </section>
 
       {/* 4. Service Area Section - Minimal Grid */}
-      <section className="border-t border-[#D6CAB7]/30 px-6 py-32 bg-[#FDFCFB]">
+      <section className="border-t border-[#D6CAB7]/30 px-6 py-24 lg:py-32 bg-[#FDFCFB]">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-12 md:grid-cols-2">
+          <div className="grid gap-12 lg:grid-cols-2">
             <div>
-              <h2 className="text-3xl font-light md:text-4xl">
+              <h2 className="text-3xl font-light lg:text-4xl">
                 Where We Serve
               </h2>
               <p className="mt-6 text-base leading-relaxed text-[#7C826F]">
@@ -151,15 +152,15 @@ export default function AboutPage() {
       </section>
 
       {/* 5. Minimal CTA */}
-      <section className="px-6 pb-32 md:pb-48">
-        <div className="mx-auto max-w-5xl rounded-sm border border-[#D6CAB7] bg-[#EAE8E4]/20 p-12 text-center md:p-24">
-          <h2 className="text-3xl font-light text-[#303520] md:text-5xl">
+      <section className="px-6 pb-32 lg:pb-48">
+        <div className="mx-auto max-w-5xl rounded-sm border border-[#D6CAB7] bg-[#EAE8E4]/20 p-8 md:p-16 lg:p-24 text-center">
+          <h2 className="text-3xl font-light text-[#303520] lg:text-5xl">
             Let’s start <span className="italic">planning</span> together.
           </h2>
-          <div className="mt-12 flex flex-col items-center justify-center gap-6 md:flex-row">
+          <div className="mt-10 lg:mt-12 flex flex-col items-center justify-center gap-6 lg:flex-row">
             <Link
               href="/booking"
-              className="inline-flex rounded-full bg-[#303520] px-10 py-4 text-sm font-bold tracking-widest uppercase text-white transition hover:bg-[#7C826F]"
+              className="inline-flex w-full sm:w-auto justify-center rounded-full bg-[#303520] px-10 py-4 text-sm font-bold tracking-widest uppercase text-white transition hover:bg-[#7C826F]"
             >
               Check Availability
             </Link>

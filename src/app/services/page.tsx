@@ -46,14 +46,14 @@ const serviceTiers = [
 
 export default function ServicesPage() {
   return (
-    <main className={`${raleway.className} bg-[#FDFCFB] text-[#303520]`}>
+    <main className={`${raleway.className} bg-[#FDFCFB] text-[#303520] overflow-x-hidden w-full`}>
       {/* 1. Header Section */}
-      <section className="mx-auto max-w-7xl px-6 pt-32 pb-20 md:pt-48 md:pb-32 text-center">
+      <section className="mx-auto max-w-7xl px-6 pt-32 pb-20 lg:pt-48 lg:pb-32 text-center">
         <div className="max-w-4xl mx-auto">
-          <p className="mb-6 text-xs font-bold tracking-[0.3em] uppercase text-[#7C826F]">
+          <p className="mb-6 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase text-[#7C826F]">
             Services & Menu
           </p>
-          <h1 className="text-5xl font-light leading-tight tracking-tight text-[#303520] md:text-8xl">
+          <h1 className="text-4xl sm:text-5xl font-light leading-tight tracking-tight text-[#303520] lg:text-8xl">
             Tailored programs <br />
             <span className="italic font-normal text-[#7C826F]">
               for elevated events.
@@ -62,26 +62,26 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* 2. Service Tiers - Static 2 Columns Grid */}
-      <section className="px-6 py-24 bg-[#EAE8E4]/30 border-t border-[#D6CAB7]/30">
+      {/* 2. Service Tiers - iPad까지 1열 유지, lg 이상에서 2열 */}
+      <section className="px-6 py-20 lg:py-24 bg-[#EAE8E4]/30 border-t border-[#D6CAB7]/30">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-12 md:grid-cols-2 max-w-5xl mx-auto">
+          <div className="grid gap-10 lg:gap-12 lg:grid-cols-2 max-w-5xl mx-auto">
             {serviceTiers.map((tier) => (
               <div
                 key={tier.title}
-                className="flex flex-col h-full border border-[#D6CAB7]/50 bg-[#FDFCFB] p-10 shadow-sm"
+                className="flex flex-col h-full border border-[#D6CAB7]/50 bg-[#FDFCFB] p-8 md:p-12 lg:p-10 shadow-sm"
               >
                 <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#7C826F] mb-4">
                   {tier.subtitle}
                 </p>
-                <h2 className="text-4xl font-light mb-2">{tier.title}</h2>
+                <h2 className="text-3xl md:text-4xl font-light mb-2">{tier.title}</h2>
                 <p className="text-sm font-bold text-[#D6CAB7] mb-8">
                   {tier.price}
                 </p>
                 <p className="text-base leading-relaxed text-[#7C826F] mb-10 flex-1">
                   {tier.body}
                 </p>
-                <ul className="grid grid-cols-1 gap-x-4 gap-y-3 border-t border-[#F5F2F0] pt-8 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
+                <ul className="grid grid-cols-1 gap-x-4 gap-y-3 border-t border-[#F5F2F0] pt-8 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                   {tier.features.map((f) => (
                     <li
                       key={f}
@@ -98,21 +98,21 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* 3. Detailed Features */}
-      <section className="mx-auto max-w-7xl px-6 py-32 md:py-48">
-        <div className="grid gap-24 md:grid-cols-12 md:items-center">
-          <div className="md:col-span-5">
-            <h2 className="text-4xl font-light leading-tight md:text-6xl">
+      {/* 3. Detailed Features - lg 미만에서 세로 쌓임 */}
+      <section className="mx-auto max-w-7xl px-6 py-24 lg:py-48 overflow-hidden">
+        <div className="grid gap-12 lg:gap-24 lg:grid-cols-12 lg:items-center">
+          <div className="lg:col-span-5 order-2 lg:order-1">
+            <h2 className="text-4xl font-light leading-tight lg:text-6xl">
               What’s always <br />
               <span className="italic">included.</span>
             </h2>
-            <p className="mt-8 text-lg leading-relaxed text-[#7C826F]">
+            <p className="mt-8 text-base lg:text-lg leading-relaxed text-[#7C826F]">
               Beyond the spirits and the styling, we provide the foundational
               elements that ensure a seamless bar operation.
             </p>
-            <div className="mt-12 space-y-10">
+            <div className="mt-10 lg:mt-12 space-y-8 lg:space-y-10">
               <div className="flex gap-6">
-                <span className="text-sm font-bold text-[#D6CAB7]">01</span>
+                <span className="text-sm font-bold text-[#D6D5CE]">01</span>
                 <div>
                   <h4 className="text-lg font-semibold uppercase tracking-tight">
                     Expert Mixologists
@@ -124,7 +124,7 @@ export default function ServicesPage() {
                 </div>
               </div>
               <div className="flex gap-6">
-                <span className="text-sm font-bold text-[#D6CAB7]">02</span>
+                <span className="text-sm font-bold text-[#D6D5CE]">02</span>
                 <div>
                   <h4 className="text-lg font-semibold uppercase tracking-tight">
                     4 Hours of Service
@@ -136,7 +136,7 @@ export default function ServicesPage() {
                 </div>
               </div>
               <div className="flex gap-6">
-                <span className="text-sm font-bold text-[#D6CAB7]">03</span>
+                <span className="text-sm font-bold text-[#D6D5CE]">03</span>
                 <div>
                   <h4 className="text-lg font-semibold uppercase tracking-tight">
                     Signature Menu
@@ -149,14 +149,15 @@ export default function ServicesPage() {
               </div>
             </div>
           </div>
-          <div className="md:col-span-7">
-            <div className="relative aspect-[16/11] w-full overflow-hidden rounded-sm shadow-xl">
+          <div className="lg:col-span-7 order-1 lg:order-2">
+            <div className="relative aspect-video lg:aspect-[16/11] w-full overflow-hidden rounded-sm shadow-xl">
               <Image
                 src="/images/garnish.jpg"
                 alt="Service Detail"
                 fill
-                sizes="(max-width: 768px) 100vw, 50vw"
+                sizes="(max-width: 1024px) 100vw, 60vw"
                 className="object-cover"
+                priority
               />
             </div>
           </div>
@@ -164,9 +165,9 @@ export default function ServicesPage() {
       </section>
 
       {/* 4. Large Informational Footer */}
-      <section className="bg-[#303520] text-white px-6 py-32 md:py-48 text-center">
+      <section className="bg-[#303520] text-white px-6 py-32 lg:py-48 text-center">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-4xl font-light leading-tight md:text-7xl">
+          <h2 className="text-4xl font-light leading-tight lg:text-7xl">
             Let us handle the <br />
             <span className="italic text-white/60">logistics.</span>
           </h2>

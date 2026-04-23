@@ -85,7 +85,7 @@ const testimonials = [
 
 export default function HomePage() {
   return (
-    <main className={`${raleway.className} bg-[#FDFCFB] text-[#303520]`}>
+    <main className={`${raleway.className} bg-[#FDFCFB] text-[#303520] overflow-x-hidden w-full`}>
       {/* 1. Hero Section - Full Screen Editorial */}
       <section className="relative h-screen w-full overflow-hidden">
         <Image
@@ -98,10 +98,10 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-black/10" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
-          <p className="mb-6 text-xs font-medium tracking-[0.4em] uppercase text-white/80">
+          <p className="mb-6 text-[10px] md:text-xs font-medium tracking-[0.4em] uppercase text-white/80">
             Est. 2024 — Catalyst Mobile Bar
           </p>
-          <h1 className="max-w-4xl text-5xl font-light leading-tight tracking-tight md:text-8xl">
+          <h1 className="max-w-4xl text-4xl sm:text-5xl font-light leading-tight tracking-tight lg:text-8xl">
             The Art of the <br />
             <span className="italic font-normal">Perfect Pour</span>
           </h1>
@@ -133,18 +133,18 @@ export default function HomePage() {
       </section>
 
       {/* 2. Brand Statement - Airy & Bold */}
-      <section className="mx-auto max-w-7xl px-6 py-32 md:py-48">
+      <section className="mx-auto max-w-7xl px-6 py-24 lg:py-48">
         <div className="flex flex-col items-center text-center">
-          <p className="mb-8 text-xs font-bold tracking-[0.3em] uppercase text-[#7C826F]">
+          <p className="mb-8 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase text-[#7C826F]">
             Our Philosophy
           </p>
-          <h2 className="max-w-4xl text-4xl leading-tight font-light text-[#303520] md:text-6xl">
-            Expert mixology meets <br className="hidden md:block" />
+          <h2 className="max-w-4xl text-3xl sm:text-4xl leading-tight font-light text-[#303520] lg:text-6xl">
+            Expert mixology meets <br className="hidden lg:block" />
             <span className="text-[#7C826F]">
               seamless, end-to-end service.
             </span>
           </h2>
-          <p className="mt-12 max-w-xl text-lg leading-relaxed text-[#7C826F]">
+          <p className="mt-10 lg:mt-12 max-w-xl text-base lg:text-lg leading-relaxed text-[#7C826F]">
             We craft lasting impressions through sophisticated mobile bar
             experiences. From intimate weddings to large-scale brand events, we
             manage every detail so you can focus on the moment.
@@ -154,21 +154,21 @@ export default function HomePage() {
       </section>
 
       {/* 3. Editorial Grid - Asymmetrical Layout */}
-      <section className="bg-[#EAE8E4]/30 px-6 py-32">
+      <section className="bg-[#EAE8E4]/30 px-6 py-24 lg:py-32">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-20 md:grid-cols-12 md:items-center">
+          <div className="grid gap-16 lg:gap-20 lg:grid-cols-12 lg:items-center">
             {/* Image Block 1 */}
-            <div className="relative md:col-span-7">
+            <div className="relative lg:col-span-7">
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm shadow-2xl">
                 <Image
                   src="/images/bartender.jpg"
                   alt="Professional mixology"
                   fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover transition-transform duration-700 hover:scale-105"
                 />
               </div>
-              <div className="absolute -bottom-10 -right-10 hidden aspect-square w-64 overflow-hidden rounded-sm border-8 border-[#FDFCFB] shadow-lg md:block">
+              <div className="absolute -bottom-10 -right-10 hidden aspect-square w-64 overflow-hidden rounded-sm border-8 border-[#FDFCFB] shadow-lg lg:block">
                 <Image
                   src="/images/party-cocktail.jpg"
                   alt="Detail"
@@ -180,11 +180,11 @@ export default function HomePage() {
             </div>
 
             {/* Text Block 1 */}
-            <div className="md:col-span-5 md:pl-10">
+            <div className="lg:col-span-5 lg:pl-10">
               <p className="mb-4 text-xs font-bold tracking-widest uppercase text-[#7C826F]">
                 Tailored Experience
               </p>
-              <h3 className="text-3xl font-light leading-snug text-[#303520] md:text-4xl">
+              <h3 className="text-3xl font-light leading-snug text-[#303520] lg:text-4xl">
                 Designed around your flow, guest comfort, and{" "}
                 <span className="italic">premium presentation</span>.
               </h3>
@@ -202,13 +202,13 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="mt-32 grid gap-20 md:grid-cols-12 md:items-center">
+          <div className="mt-24 lg:mt-32 grid gap-16 lg:gap-20 lg:grid-cols-12 lg:items-center">
             {/* Text Block 2 */}
-            <div className="order-2 md:order-1 md:col-span-5 md:pr-10">
+            <div className="order-2 lg:order-1 lg:col-span-5 lg:pr-10">
               <p className="mb-4 text-xs font-bold tracking-widest uppercase text-[#7C826F]">
                 Sustainability
               </p>
-              <h3 className="text-3xl font-light leading-snug text-[#303520] md:text-4xl">
+              <h3 className="text-3xl font-light leading-snug text-[#303520] lg:text-4xl">
                 Pure care, by nature. Crafted with{" "}
                 <span className="italic">intentionality</span>.
               </h3>
@@ -220,13 +220,13 @@ export default function HomePage() {
             </div>
 
             {/* Image Block 2 */}
-            <div className="order-1 md:order-2 md:col-span-7">
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-sm">
+            <div className="order-1 lg:order-2 lg:col-span-7">
+              <div className="relative aspect-video lg:aspect-[16/10] w-full overflow-hidden rounded-sm">
                 <Image
                   src="/images/cocktail1.jpg"
                   alt="Sustainably sourced ingredients"
                   fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                 />
               </div>
@@ -236,33 +236,33 @@ export default function HomePage() {
       </section>
 
       {/* 4. Testimonials - Refined Marquee */}
-      <section className="overflow-hidden pt-32 pb-16 md:pt-48 md:pb-24">
+      <section className="overflow-hidden pt-24 pb-12 lg:pt-48 lg:pb-24">
         <div className="mx-auto max-w-7xl px-6 text-center">
           <p className="mb-4 text-xs font-bold tracking-widest uppercase text-[#7C826F]">
             Kind Words
           </p>
-          <h2 className="text-3xl font-light text-[#303520] md:text-5xl">
+          <h2 className="text-3xl font-light text-[#303520] lg:text-5xl">
             Trusted by professionals.
           </h2>
         </div>
 
-        <div className="review-marquee mt-20">
+        <div className="review-marquee mt-16 lg:mt-20">
           <div className="review-track">
             {[...testimonials, ...testimonials].map((item, index) => (
               <article
                 key={`${item.id}-${index}`}
-                className="flex h-full w-[300px] flex-col justify-between border-r border-[#D6CAB7]/30 px-10 md:w-[400px]"
+                className="flex h-full w-[280px] flex-col justify-between border-r border-[#D6CAB7]/30 px-8 md:w-[350px] lg:w-[400px] lg:px-10"
               >
                 <div>
-                  <div className="text-4xl text-[#D6CAB7]/50 font-serif leading-none">
+                  <div className="text-3xl lg:text-4xl text-[#D6CAB7]/50 font-serif leading-none">
                     “
                   </div>
-                  <p className="mt-4 text-lg font-light leading-relaxed text-[#303520]">
+                  <p className="mt-4 text-base lg:text-lg font-light leading-relaxed text-[#303520]">
                     {item.quote}
                   </p>
                 </div>
-                <div className="mt-10 flex items-center gap-4">
-                  <div className="relative h-12 w-12 overflow-hidden rounded-full border border-[#D6CAB7]">
+                <div className="mt-8 lg:mt-10 flex items-center gap-4">
+                  <div className="relative h-10 w-10 lg:h-12 lg:w-12 overflow-hidden rounded-full border border-[#D6CAB7]">
                     <Image
                       src={item.image}
                       alt={`${item.name} avatar`}
@@ -275,7 +275,7 @@ export default function HomePage() {
                     <p className="text-sm font-semibold tracking-wide text-[#303520]">
                       {item.name}
                     </p>
-                    <p className="text-xs uppercase tracking-wider text-[#7C826F]">
+                    <p className="text-[10px] lg:text-xs uppercase tracking-wider text-[#7C826F]">
                       {item.role}
                     </p>
                   </div>
@@ -287,23 +287,23 @@ export default function HomePage() {
       </section>
 
       {/* 5. CTA Section - Minimalist & Elegant */}
-      <section className="px-6 pt-16 pb-32 md:pt-24 md:pb-48">
-        <div className="mx-auto max-w-4xl rounded-2xl border border-[#D6CAB7] bg-[#EAE8E4]/20 p-12 text-center md:p-24">
-          <p className="mb-6 text-xs font-bold tracking-[0.3em] uppercase text-[#7C826F]">
+      <section className="px-6 pt-16 pb-32 lg:pt-24 lg:pb-48">
+        <div className="mx-auto max-w-4xl rounded-2xl border border-[#D6CAB7] bg-[#EAE8E4]/20 p-10 md:p-16 lg:p-24 text-center">
+          <p className="mb-6 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase text-[#7C826F]">
             Now Booking 2024 & 2025
           </p>
-          <h2 className="text-4xl font-light text-[#303520] md:text-6xl">
+          <h2 className="text-3xl sm:text-4xl font-light text-[#303520] lg:text-6xl">
             Ready to <span className="italic">Elevate</span>{" "}
-            <br className="hidden md:block" /> Your Next Event?
+            <br className="hidden lg:block" /> Your Next Event?
           </h2>
-          <p className="mx-auto mt-8 max-w-md text-base leading-relaxed text-[#7C826F]">
+          <p className="mx-auto mt-8 max-w-md text-sm lg:text-base leading-relaxed text-[#7C826F]">
             Confirm your date with a simple 5-step inquiry. We'll follow up
             within 24–48 hours to craft your custom experience.
           </p>
-          <div className="mt-12">
+          <div className="mt-10 lg:mt-12">
             <Link
               href="/booking"
-              className="inline-flex rounded-full bg-[#303520] px-10 py-4 text-sm font-bold tracking-widest uppercase text-white transition hover:bg-[#7C826F]"
+              className="inline-flex w-full sm:w-auto justify-center rounded-full bg-[#303520] px-10 py-4 text-sm font-bold tracking-widest uppercase text-white transition hover:bg-[#7C826F]"
             >
               Check Availability
             </Link>
