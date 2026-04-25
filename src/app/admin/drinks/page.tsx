@@ -13,7 +13,7 @@ export default async function AdminDrinksPage() {
 
   const sectionTitleClass = "text-[10px] font-bold uppercase tracking-[0.3em] text-[#7C826F]";
   
-  const alcoholOrder = ["TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY"] as const;
+  const alcoholOrder = ["RECOMMEND", "TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY", "BUBBLY"] as const;
   
   const alcoholLabels: Record<string, string> = {
     TEQUILA: "Tequila",
@@ -21,6 +21,8 @@ export default async function AdminDrinksPage() {
     GIN: "Gin",
     RUM: "Rum",
     WHISKEY: "Whiskey",
+    BUBBLY: "Bubbly",
+    RECOMMEND: "Recommend",
   };
 
   return (

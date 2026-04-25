@@ -20,6 +20,8 @@ export default function NewDrinkPage() {
     { value: "GIN", label: "Gin" },
     { value: "RUM", label: "Rum" },
     { value: "WHISKEY", label: "Whiskey" },
+    { value: "BUBBLY", label: "Bubbly" },
+    { value: "RECOMMEND", label: "Recommend" },
   ];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

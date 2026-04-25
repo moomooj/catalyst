@@ -10,7 +10,7 @@ import { put, del } from "@vercel/blob";
 const drinkSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
-  alcoholTypes: z.array(z.enum(["TEQUILA", "RUM", "GIN", "VODKA", "WHISKEY"])).min(1, "Select at least one alcohol type"),
+  alcoholTypes: z.array(z.enum(["TEQUILA", "RUM", "GIN", "VODKA", "WHISKEY", "BUBBLY", "RECOMMEND"])).min(1, "Select at least one alcohol type"),
 });
 
 export async function createDrinkAction(prevState: any, formData: FormData) {

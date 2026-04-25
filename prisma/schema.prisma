@@ -114,4 +114,6 @@ enum AlcoholType {
   GIN
   VODKA
   WHISKEY
+  BUBBLY
+  RECOMMEND
 }
