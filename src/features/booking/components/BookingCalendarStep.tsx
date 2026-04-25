@@ -1210,6 +1210,7 @@ export function BookingCalendarStep({
                       cocktailMenuOptions
                         .filter(c => selectedCocktailMenus.includes(c.id))
                         .flatMap(c => c.alcoholTypes || [])
+                        .filter(type => !["RECOMMEND", "BUBBLY"].includes(type))
                     )).sort((a, b) => {
                       const order = ["TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY"];
                       return order.indexOf(a) - order.indexOf(b);
