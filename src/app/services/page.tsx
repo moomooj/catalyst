@@ -8,9 +8,13 @@ const raleway = Raleway({
 });
 
 export const metadata = {
-  title: "Services | The Catalyst Mobile Bar",
+  title: "Services & Packages",
   description:
-    "Explore our premium bar programs: Dry Hire and All Inclusive packages.",
+    "Explore our premium bar programs in Vancouver: Dry Hire for flexibility and All-Inclusive for a complete, luxury cocktail experience.",
+  openGraph: {
+    title: "Services & Packages | The Catalyst Mobile Bar",
+    description: "Premium mobile bar services in Vancouver: Dry Hire and All-Inclusive cocktail packages.",
+  },
 };
 
 const serviceTiers = [

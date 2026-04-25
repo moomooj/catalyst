@@ -162,7 +162,7 @@ export default function HomePage() {
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm shadow-2xl">
                 <Image
                   src="/images/bartender.jpg"
-                  alt="Professional mixology"
+                  alt="Professional Vancouver wedding bartender crafting signature cocktails"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover transition-transform duration-700 hover:scale-105"
