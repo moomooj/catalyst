@@ -185,7 +185,7 @@ export function BookingCalendarStep({
   const [selectedPackageId, setSelectedPackageId] =
     useState<(typeof packageOptions)[number]["id"]>("standard");
   const [selectedDrinkChoiceId, setSelectedDrinkChoiceId] =
-    useState<string>("standard-2-custom");
+    useState<string>("standard-base");
   const [additionalCocktails, setAdditionalCocktails] = useState(0);
   const [additionalDrinks, setAdditionalDrinks] = useState(
     String(MIN_GUARANTEED_DRINK_COUNT),
@@ -198,15 +198,17 @@ export function BookingCalendarStep({
   const [selectedCocktailMenus, setSelectedCocktailMenus] = useState<string[]>(
     [],
   );
-  const [alcoholFilter, setAlcoholFilter] = useState<string>("TEQUILA");
+  const [alcoholFilter, setAlcoholFilter] = useState<string>("RECOMMEND");
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const alcoholLabels: Record<string, string> = {
+    RECOMMEND: "Recommend",
     TEQUILA: "Tequila",
     VODKA: "Vodka",
     GIN: "Gin",
     RUM: "Rum",
     WHISKEY: "Whiskey",
+    BUBBLY: "Bubbly",
   };
 
   const cocktailMenuOptions = useMemo(() => {
@@ -1062,7 +1064,7 @@ export function BookingCalendarStep({
 
           {/* Alcohol Category Tabs */}
           <div className="mb-6 flex flex-wrap gap-4 border-b border-[#D6CAB7]/30 md:mb-10 md:gap-6">
-            {["TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY"].map((type) => (
+            {["RECOMMEND", "TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY", "BUBBLY"].map((type) => (
               <button
                 key={type}
                 type="button"
@@ -1132,42 +1134,6 @@ export function BookingCalendarStep({
               })}
           </div>
 
-          {/* Custom Cocktail Request Section */}
-          <div className={`mt-8 border border-dashed p-5 transition-all duration-500 md:mt-12 md:p-8 ${
-            selectedCocktailMenus.length >= totalCocktailSlots 
-              ? "bg-[#F7F5F0] border-[#D6CAB7] opacity-60" 
-              : "bg-[#FDFCFB] border-[#D6CAB7]"
-          }`}>
-            <div className="max-w-2xl">
-              <h4 className="text-[9px] font-medium uppercase tracking-[0.2em] text-[#B1AA9A] mb-3 transition-colors">
-                {selectedCocktailMenus.length >= totalCocktailSlots 
-                  ? "Maximum selection reached" 
-                  : "Can't find what you're looking for?"}
-              </h4>
-              <div className="flex flex-col gap-2 sm:flex-row md:gap-4">
-                <input
-                  type="text"
-                  disabled={selectedCocktailMenus.length >= totalCocktailSlots}
-                  value={customCocktailInput}
-                  onChange={(e) => setCustomCocktailInput(e.target.value)}
-                  placeholder={selectedCocktailMenus.length >= totalCocktailSlots 
-                    ? "Limit reached" 
-                    : "Request custom (e.g. Lychee Martini)"}
-                  className="flex-1 rounded-none border border-[#D6CAB7] bg-white px-4 py-2 text-xs focus:border-[#7C826F] focus:outline-none placeholder:text-[#B1AA9A] disabled:bg-transparent disabled:cursor-not-allowed"
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomCocktail())}
-                />
-                <button
-                  type="button"
-                  disabled={selectedCocktailMenus.length >= totalCocktailSlots || !customCocktailInput.trim()}
-                  onClick={addCustomCocktail}
-                  className="rounded-none bg-[#303520] px-6 py-2 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:bg-[#7C826F] disabled:bg-[#D6D5CE] disabled:cursor-not-allowed"
-                >
-                  Add
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Your Selection Preview */}
           <div className="mt-10 border-t border-[#D6CAB7] pt-6 md:mt-16 md:pt-10">
             <h3 className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#7C826F] mb-4 md:mb-8">Selection Preview</h3>
@@ -1223,6 +1189,42 @@ export function BookingCalendarStep({
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Custom Cocktail Request Section */}
+          <div className={`mt-8 border border-dashed p-5 transition-all duration-500 md:mt-12 md:p-8 ${
+            selectedCocktailMenus.length >= totalCocktailSlots 
+              ? "bg-[#F7F5F0] border-[#D6CAB7] opacity-60" 
+              : "bg-[#FDFCFB] border-[#D6CAB7]"
+          }`}>
+            <div className="max-w-2xl">
+              <h4 className="text-[9px] font-medium uppercase tracking-[0.2em] text-[#B1AA9A] mb-3 transition-colors">
+                {selectedCocktailMenus.length >= totalCocktailSlots 
+                  ? "Maximum selection reached" 
+                  : "Can't find what you're looking for?"}
+              </h4>
+              <div className="flex flex-col gap-2 sm:flex-row md:gap-4">
+                <input
+                  type="text"
+                  disabled={selectedCocktailMenus.length >= totalCocktailSlots}
+                  value={customCocktailInput}
+                  onChange={(e) => setCustomCocktailInput(e.target.value)}
+                  placeholder={selectedCocktailMenus.length >= totalCocktailSlots 
+                    ? "Limit reached" 
+                    : "Request custom (e.g. Lychee Martini)"}
+                  className="flex-1 rounded-none border border-[#D6CAB7] bg-white px-4 py-2 text-xs focus:border-[#7C826F] focus:outline-none placeholder:text-[#B1AA9A] disabled:bg-transparent disabled:cursor-not-allowed"
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomCocktail())}
+                />
+                <button
+                  type="button"
+                  disabled={selectedCocktailMenus.length >= totalCocktailSlots || !customCocktailInput.trim()}
+                  onClick={addCustomCocktail}
+                  className="rounded-none bg-[#303520] px-6 py-2 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:bg-[#7C826F] disabled:bg-[#D6D5CE] disabled:cursor-not-allowed"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="mt-7 flex flex-col gap-3 border-t border-[#D6CAB7] pt-5 md:flex-row md:justify-between">
@@ -1297,6 +1299,7 @@ export function BookingCalendarStep({
                       cocktailMenuOptions
                         .filter(c => selectedCocktailMenus.includes(c.id))
                         .flatMap(c => c.alcoholTypes || [])
+                        .filter(type => !["RECOMMEND", "BUBBLY"].includes(type))
                     )).sort((a,b) => ["TEQUILA","VODKA","GIN","RUM","WHISKEY"].indexOf(a) - ["TEQUILA","VODKA","GIN","RUM","WHISKEY"].indexOf(b)).map(t => (
                       <p key={t} className="text-xs font-medium text-[#7C826F] italic">+ {alcoholLabels[t]} Highball</p>
                     ))}
