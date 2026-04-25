@@ -1,0 +1,28 @@
+{
+  "name": "The Catalyst Mobile Bar",
+  "short_name": "Catalyst",
+  "description": "Vancouver Premium Pop-up Bar Experience",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F3EFE0",
+  "theme_color": "#F3EFE0",
+  "icons": [
+    {
+      "src": "/icon1.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

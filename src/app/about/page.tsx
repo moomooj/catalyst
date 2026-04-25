@@ -9,9 +9,13 @@ const raleway = Raleway({
 });
 
 export const metadata = {
-  title: "About | Catalyst Mobile Bar",
+  title: "Our Story",
   description:
-    "Our story, philosophy, and commitment to refined event mixology.",
+    "Discover the philosophy behind The Catalyst Mobile Bar. We blend Vancouver's modern lifestyle with premium mixology to create unforgettable event atmospheres.",
+  openGraph: {
+    title: "Our Story | The Catalyst Mobile Bar",
+    description: "Discover the philosophy behind The Catalyst Mobile Bar. We blend Vancouver's modern lifestyle with premium mixology.",
+  },
 };
 
 export default function AboutPage() {

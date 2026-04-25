@@ -51,8 +51,12 @@ export function Footer() {
             </ul>
           </div>
 
+          {/* Contact & Location */}
           <div className="md:col-span-4">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#303520]">Contact</h3>
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#303520]">Service Areas</h3>
+            <p className="mt-8 text-sm leading-relaxed text-[#7C826F]">
+              Greater Vancouver, Whistler, Fraser Valley, and the Sunshine Coast. Available for travel across British Columbia.
+            </p>
             <div className="mt-8 space-y-6">
               <div>
                 <p className="text-sm text-[#7C826F]">General Inquiries</p>
@@ -66,7 +70,7 @@ export function Footer() {
                   136 W Cordova St, Vancouver, BC V6B 2N3, Canada
                 </p>
                 <p className="mt-2 text-xs text-[#A19C90]">
-                  Serving It Right Certified & Fully Insured
+                  Serving It Right Certified & Fully Insured · BC Licensed Business
                 </p>
               </div>
             </div>

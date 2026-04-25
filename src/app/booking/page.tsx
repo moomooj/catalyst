@@ -3,9 +3,13 @@ import { getBusyDatesService } from "@/features/booking/service";
 import { db } from "@/lib/db";
 
 export const metadata = {
-  title: "Booking | The Catalyst Mobile Bar",
+  title: "Book Your Event",
   description:
-    "Start your booking inquiry with event details, guest count, and service style preferences."
+    "Check availability and get a quote for your Vancouver event. Start your booking inquiry for premium mobile bar services today.",
+  openGraph: {
+    title: "Book Your Event | The Catalyst Mobile Bar",
+    description: "Check availability and get a quote for your Vancouver event today.",
+  },
 };
 
 export default async function BookingPage() {

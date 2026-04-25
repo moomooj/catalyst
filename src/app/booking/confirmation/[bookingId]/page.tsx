@@ -155,7 +155,7 @@ export default async function BookingConfirmationPage({ params, searchParams }: 
                 <div className="flex flex-wrap items-center gap-6 md:gap-8">
                   <div className="lg:text-right">
                     <p className="text-[8px] text-[#B1AA9A] font-bold uppercase tracking-widest mb-1">Inquiries</p>
-                    <p className="text-xs text-[#303520] font-bold">hello@catalystmobilebar.ca</p>
+                    <p className="text-xs text-[#303520] font-bold">events@catalystbar.ca</p>
                   </div>
                   <div className="h-8 w-px bg-[#D6D5CE] hidden sm:block" />
                   <div className="lg:text-right">
