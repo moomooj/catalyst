@@ -78,49 +78,50 @@ export default async function AdminDrinksPage() {
                   </div>
 
                   {drinksByType.length === 0 ? (
-                    <div className="border border-dashed border-[#D6D5CE]/30 py-12 text-center">
-                      <p className="text-[10px] uppercase tracking-widest text-[#B1AA9A]">No drinks registered in this category</p>
+                    <div className="border border-dashed border-[#D6D5CE]/30 py-8 text-center">
+                      <p className="text-[9px] uppercase tracking-widest text-[#B1AA9A]">No drinks registered in this category</p>
                     </div>
                   ) : (
-                    <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div className="grid gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
                       {drinksByType.map((drink) => (
                         <div 
                           key={`${type}-${drink.id}`} 
-                          className="group relative flex flex-col border border-[#D6CAB7] bg-white transition-all hover:shadow-xl"
+                          className="group relative flex flex-col border border-[#D6CAB7] bg-white transition-all hover:shadow-lg"
                         >
                           <div className="relative aspect-square w-full overflow-hidden bg-[#F9F8F6]">
                             <Image
                               src={drink.image}
                               alt={drink.name}
                               fill
+                              sizes="(max-width: 768px) 33vw, (max-width: 1200px) 20vw, 15vw"
                               className="object-cover transition-transform duration-700 group-hover:scale-105"
                             />
                             {/* 다중 알코올 태그 표시 */}
-                            <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
+                            <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
                               {(drink.alcoholTypes as string[] || []).map(t => (
-                                <span key={t} className="bg-white/90 px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-widest text-[#7C826F] border border-[#D6CAB7]/30">
+                                <span key={t} className="bg-white/90 px-1 py-0.5 text-[6px] font-bold uppercase tracking-tight text-[#7C826F] border border-[#D6CAB7]/20">
                                   {alcoholLabels[t] || t}
                                 </span>
                               ))}
                             </div>
                           </div>
                           
-                          <div className="flex flex-1 flex-col p-6">
-                            <h3 className="text-lg font-medium tracking-tight text-[#303520]">
+                          <div className="flex flex-1 flex-col p-3">
+                            <h3 className="text-sm font-medium tracking-tight text-[#303520] line-clamp-1">
                               {drink.name}
                             </h3>
-                            <p className="mt-3 line-clamp-3 text-xs text-[#7C826F] leading-relaxed">
+                            <p className="mt-1 line-clamp-2 text-[10px] text-[#7C826F] leading-relaxed">
                               {drink.description}
                             </p>
                             
-                            <div className="mt-8 flex items-center justify-between border-t border-[#F5F2F0] pt-5">
+                            <div className="mt-4 flex items-center justify-between border-t border-[#F5F2F0] pt-3">
                               <Link 
                                 href={`/admin/drinks/${drink.id}`}
-                                className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7C826F] hover:text-[#303520] transition-colors"
+                                className="text-[9px] font-bold uppercase tracking-wider text-[#7C826F] hover:text-[#303520] transition-colors"
                               >
-                                View / Edit
+                                Edit
                               </Link>
-                              <div className={`h-2 w-2 rounded-full ${drink.isActive ? "bg-[#A3B18A]" : "bg-[#B1AA9A]"}`} />
+                              <div className={`h-1.5 w-1.5 rounded-full ${drink.isActive ? "bg-[#A3B18A]" : "bg-[#B1AA9A]"}`} />
                             </div>
                           </div>
                         </div>
