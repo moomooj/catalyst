@@ -26,8 +26,15 @@ export function EditDrinkForm({ drink }: { drink: any }) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.type !== "image/webp") {
-        alert("Please upload a .webp file only.");
+      const allowedTypes = ["image/webp", "image/jpeg"];
+      if (!allowedTypes.includes(file.type)) {
+        alert("Please upload a .webp or .jpg file only.");
+        e.target.value = "";
+        return;
+      }
+      
+      if (file.size > 512000) {
+        alert("File size must be less than 500KB.");
         e.target.value = "";
         return;
       }
@@ -85,7 +92,7 @@ export function EditDrinkForm({ drink }: { drink: any }) {
           </div>
 
           <div className="block">
-            <span className={labelClass}>Change Image (WebP)</span>
+            <span className={labelClass}>Change Image (WebP, JPG)</span>
             <div 
               onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
               onDragLeave={() => setIsDragging(false)}
@@ -109,7 +116,7 @@ export function EditDrinkForm({ drink }: { drink: any }) {
                 ref={fileInputRef}
                 name="image" 
                 type="file" 
-                accept=".webp"
+                accept=".webp, .jpg, .jpeg"
                 onChange={handleFileChange}
                 className="absolute inset-0 z-10 cursor-pointer opacity-0"
               />
@@ -118,7 +125,10 @@ export function EditDrinkForm({ drink }: { drink: any }) {
                   <Image src={preview} alt="Preview" fill className="object-cover" />
                 </div>
               ) : (
-                <span className="text-[10px] uppercase tracking-widest text-[#B1AA9A]">Drop new photo</span>
+                <div className="flex flex-col items-center">
+                  <span className="text-[10px] uppercase tracking-widest text-[#B1AA9A]">Drop new photo</span>
+                  <p className="mt-1 text-[8px] text-[#B1AA9A] uppercase tracking-widest">WebP or JPG · Max 500KB</p>
+                </div>
               )}
             </div>
           </div>

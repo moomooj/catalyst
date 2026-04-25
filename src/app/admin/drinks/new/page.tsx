@@ -125,7 +125,7 @@ export default function NewDrinkPage() {
               </div>
 
               <div className="block">
-                <span className={labelClass}>Cocktail Image (WebP)</span>
+                <span className={labelClass}>Cocktail Image (WebP, JPG)</span>
                 <div 
                   onDragOver={onDragOver}
                   onDragLeave={onDragLeave}

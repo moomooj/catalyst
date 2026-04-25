@@ -5,8 +5,7 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { writeFile, unlink } from "node:fs/promises";
-import { join } from "node:path";
+import { put, del } from "@vercel/blob";
 
 const drinkSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -21,16 +20,17 @@ export async function createDrinkAction(prevState: any, formData: FormData) {
   if (!imageFile || imageFile.size === 0) {
     return { error: { image: ["Image file is required"] } };
   }
-// WebP 및 JPG 확장자 검증
-const allowedTypes = ["image/webp", "image/jpeg"];
-if (!allowedTypes.includes(imageFile.type)) {
-  return { error: { image: ["Only .webp or .jpg files are allowed"] } };
-}
 
-// 파일 용량 제한 (500KB = 512,000 bytes)
-if (imageFile.size > 512000) {
-  return { error: { image: ["File size must be less than 500KB"] } };
-}
+  // WebP 및 JPG 확장자 검증
+  const allowedTypes = ["image/webp", "image/jpeg"];
+  if (!allowedTypes.includes(imageFile.type)) {
+    return { error: { image: ["Only .webp or .jpg files are allowed"] } };
+  }
+
+  // 파일 용량 제한 (500KB = 512,000 bytes)
+  if (imageFile.size > 512000) {
+    return { error: { image: ["File size must be less than 500KB"] } };
+  }
 
   const alcoholTypes = formData.getAll("alcoholTypes") as string[];
   const data = {
@@ -43,24 +43,21 @@ if (imageFile.size > 512000) {
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
   try {
-    const bytes = await imageFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const fileName = `${Date.now()}-${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-    const uploadDir = join(process.cwd(), "public", "images", "drinks");
-    const fullPath = join(uploadDir, fileName);
-    const dbPath = `/images/drinks/${fileName}`;
-
-    await writeFile(fullPath, buffer);
+    // Vercel Blob으로 업로드
+    const blob = await put(`drinks/${Date.now()}-${imageFile.name}`, imageFile, {
+      access: "public",
+    });
 
     await db.drink.create({
       data: {
         name: parsed.data.name,
         description: parsed.data.description,
-        image: dbPath,
+        image: blob.url,
         alcoholTypes: parsed.data.alcoholTypes,
       },
     });
   } catch (err) {
+    console.error("Upload error:", err);
     return { error: "Failed to create drink." };
   }
 
@@ -90,17 +87,20 @@ export async function updateDrinkAction(id: number, prevState: any, formData: Fo
 
     // 새로운 이미지가 업로드된 경우
     if (newImage && newImage.size > 0) {
-      if (newImage.type !== "image/webp") return { error: { image: ["Only .webp allowed"] } };
-      
-      // 기존 파일 삭제 시도
-      try {
-        await unlink(join(process.cwd(), "public", existing.image));
-      } catch (e) {}
+      // 기존 Vercel Blob 이미지 삭제 시도
+      if (existing.image.includes("public.blob.vercel-storage.com")) {
+        try {
+          await del(existing.image);
+        } catch (e) {
+          console.warn("Failed to delete old blob:", e);
+        }
+      }
 
-      const bytes = await newImage.arrayBuffer();
-      const fileName = `${Date.now()}-${newImage.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-      imagePath = `/images/drinks/${fileName}`;
-      await writeFile(join(process.cwd(), "public", imagePath), Buffer.from(bytes));
+      // 새 이미지 업로드
+      const blob = await put(`drinks/${Date.now()}-${newImage.name}`, newImage, {
+        access: "public",
+      });
+      imagePath = blob.url;
     }
 
     await db.drink.update({
@@ -113,6 +113,7 @@ export async function updateDrinkAction(id: number, prevState: any, formData: Fo
       },
     });
   } catch (err) {
+    console.error("Update error:", err);
     return { error: "Failed to update drink." };
   }
 
@@ -127,15 +128,12 @@ export async function deleteDrinkAction(id: number, prevState?: any) {
     const drink = await db.drink.findUnique({ where: { id } });
     if (!drink) return { error: "Drink not found." };
 
-    // 1. 이미지 파일 삭제 (DB 삭제 전 수행)
-    if (drink.image) {
+    // 1. Vercel Blob 이미지 삭제
+    if (drink.image && drink.image.includes("public.blob.vercel-storage.com")) {
       try {
-        const fullPath = join(process.cwd(), "public", drink.image);
-        await unlink(fullPath);
-        console.log(`Successfully deleted image: ${fullPath}`);
+        await del(drink.image);
       } catch (e) {
-        // 파일이 이미 없거나 권한 문제일 경우 무시하고 진행
-        console.warn(`File deletion skipped: ${drink.image}`, e);
+        console.warn(`Blob deletion skipped: ${drink.image}`, e);
       }
     }
 
