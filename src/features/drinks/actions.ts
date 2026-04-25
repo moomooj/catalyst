@@ -62,6 +62,7 @@ export async function createDrinkAction(prevState: any, formData: FormData) {
   }
 
   revalidatePath("/admin/drinks");
+  revalidatePath("/booking");
   redirect("/admin/drinks");
 }
 
@@ -118,6 +119,7 @@ export async function updateDrinkAction(id: number, prevState: any, formData: Fo
   }
 
   revalidatePath("/admin/drinks");
+  revalidatePath("/booking");
   redirect("/admin/drinks");
 }
 
@@ -145,6 +147,7 @@ export async function deleteDrinkAction(id: number, prevState?: any) {
   }
 
   revalidatePath("/admin/drinks");
+  revalidatePath("/booking");
   redirect("/admin/drinks");
 }
 
