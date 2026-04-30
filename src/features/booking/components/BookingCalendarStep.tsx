@@ -761,7 +761,7 @@ export function BookingCalendarStep({
                       ) : null}
                       <p className="text-xs opacity-80">
                         {pkg.id === "premium"
-                          ? `Starting from $1200 / $${PER_DRINK_PRICE} per drink`
+                          ? `Starting from $1350 / $${PER_DRINK_PRICE} per drink`
                           : `Starting from $${pkg.basePrice}`}
                       </p>
                     </button>
@@ -975,24 +975,31 @@ export function BookingCalendarStep({
                   Guaranteed Drink Count: {additionalDrinksCount},{" "}
                   {2 + additionalCocktails} Cocktails, {4 + extraHours} Hours.
                 </span>
-                <div className="mt-2 grid grid-cols-1 gap-3 text-sm font-medium text-[#303520] md:grid-cols-3 md:gap-4">
+                <div className="mt-2 grid grid-cols-2 gap-3 text-sm font-medium text-[#303520] md:grid-cols-4 md:gap-4">
                   <div className="rounded-md border border-[#D6CAB7] bg-[#FBF9F4] p-3">
                     <span className="block text-xs tracking-wide text-[#7C826F]">
-                      Per Drink / per person
+                      Per Drink Price
                     </span>
                     <span className="block text-base font-semibold">
-                      ${PER_DRINK_PRICE} /{" "}
+                      ${PER_DRINK_PRICE}
+                    </span>
+                  </div>
+                  <div className="rounded-md border border-[#D6CAB7] bg-[#FBF9F4] p-3">
+                    <span className="block text-xs tracking-wide text-[#7C826F]">
+                      Est. Drinks
+                    </span>
+                    <span className="block text-base font-semibold">
                       {drinksPerGuest != null
                         ? Number.isInteger(drinksPerGuest)
-                          ? drinksPerGuest
-                          : drinksPerGuest.toFixed(1)
+                          ? `${drinksPerGuest} drinks`
+                          : `${Math.floor(drinksPerGuest)}-${Math.ceil(drinksPerGuest)} drinks`
                         : "—"}{" "}
-                      per person
+                      <span className="text-[10px] font-normal text-[#7C826F]">/ person</span>
                     </span>
                   </div>
                   <div className="rounded-md border border-[#D6CAB7] bg-[#FBF9F4] p-3">
                     <span className="block text-xs uppercase tracking-wide text-[#7C826F]">
-                      Additional Cocktail
+                      Add-on Cocktail
                     </span>
                     <span className="block text-base font-semibold">
                       ${250 * additionalCocktails}
@@ -1000,7 +1007,7 @@ export function BookingCalendarStep({
                   </div>
                   <div className="rounded-md border border-[#D6CAB7] bg-[#FBF9F4] p-3">
                     <span className="block text-xs uppercase tracking-wide text-[#7C826F]">
-                      Additional Hours
+                      Add-on Hours
                     </span>
                     <span className="block text-base font-semibold">
                       ${250 * extraHours}

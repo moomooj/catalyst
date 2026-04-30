@@ -1,8 +1,8 @@
 /** All Inclusive: additional drinks billed at this rate (CAD per drink). */
-export const PER_DRINK_PRICE = 6;
+export const PER_DRINK_PRICE = 9;
 
 /** All Inclusive: default / minimum guaranteed drink count (glasses). */
-export const MIN_GUARANTEED_DRINK_COUNT = 200;
+export const MIN_GUARANTEED_DRINK_COUNT = 150;
 
 /** All Inclusive: minimum cocktail count included. */
 export const ALL_INCLUSIVE_MIN_COCKTAIL_COUNT = 2;
