@@ -1183,7 +1183,8 @@ export function BookingCalendarStep({
                       cocktailMenuOptions
                         .filter(c => selectedCocktailMenus.includes(c.id))
                         .flatMap(c => c.alcoholTypes || [])
-                        .filter(type => !["RECOMMEND", "BUBBLY"].includes(type))
+                        .map(t => String(t).toUpperCase())
+                        .filter(type => ["TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY"].includes(type))
                     )).sort((a, b) => {
                       const order = ["TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY"];
                       return order.indexOf(a) - order.indexOf(b);
@@ -1306,7 +1307,8 @@ export function BookingCalendarStep({
                       cocktailMenuOptions
                         .filter(c => selectedCocktailMenus.includes(c.id))
                         .flatMap(c => c.alcoholTypes || [])
-                        .filter(type => !["RECOMMEND", "BUBBLY"].includes(type))
+                        .map(t => String(t).toUpperCase())
+                        .filter(type => ["TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY"].includes(type))
                     )).sort((a,b) => ["TEQUILA","VODKA","GIN","RUM","WHISKEY"].indexOf(a) - ["TEQUILA","VODKA","GIN","RUM","WHISKEY"].indexOf(b)).map(t => (
                       <p key={t} className="text-xs font-medium text-[#7C826F] italic">+ {alcoholLabels[t]} Highball</p>
                     ))}

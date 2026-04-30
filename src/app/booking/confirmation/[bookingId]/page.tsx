@@ -40,19 +40,32 @@ export default async function BookingConfirmationPage({ params, searchParams }: 
 
   const bookedCocktailNames = (booking.cocktails as string[]) || [];
   const usedAlcoholTypes = new Set<string>();
+  
+  // 하이볼 제공이 가능한 주종 목록 (화이트리스트)
+  const allowedHighballTypes = ["TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY"];
+
   bookedCocktailNames.forEach(name => {
     const match = allDrinksInDb.find(d => d.name.trim().toLowerCase() === name.trim().toLowerCase());
     if (match && Array.isArray(match.alcoholTypes)) {
-      (match.alcoholTypes as string[]).forEach(type => usedAlcoholTypes.add(type));
+      (match.alcoholTypes as string[]).forEach(type => {
+        const upperType = type.toUpperCase();
+        if (allowedHighballTypes.includes(upperType)) {
+          usedAlcoholTypes.add(upperType);
+        }
+      });
     }
   });
 
   const alcoholLabels: Record<string, string> = {
-    TEQUILA: "Tequila", VODKA: "Vodka", GIN: "Gin", RUM: "Rum", WHISKEY: "Whiskey",
+    TEQUILA: "Tequila", 
+    VODKA: "Vodka", 
+    GIN: "Gin", 
+    RUM: "Rum", 
+    WHISKEY: "Whiskey",
   };
 
   const highballMenu = Array.from(usedAlcoholTypes)
-    .sort((a, b) => ["TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY"].indexOf(a) - ["TEQUILA", "VODKA", "GIN", "RUM", "WHISKEY"].indexOf(b))
+    .sort((a, b) => allowedHighballTypes.indexOf(a) - allowedHighballTypes.indexOf(b))
     .map(type => `${alcoholLabels[type]} Highball`);
 
   const dateLabel = new Intl.DateTimeFormat("en-US", {
