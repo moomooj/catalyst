@@ -35,7 +35,7 @@ const serviceTiers = [
   {
     title: "All Inclusive Package",
     subtitle: "The Full Experience",
-    price: "From $1,200",
+    price: "From $1,350",
     body: "Our premium turnkey solution. We provide everything needed for a high-end cocktail experience, from bespoke menu design to full spirit procurement and styling.",
     features: [
       "Custom 2-4 Cocktail Menu",
