@@ -231,6 +231,95 @@ export function BookingCalendarStep({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submittedName, setSubmittedName] = useState("");
   const eventTypeMenuRef = useRef<HTMLDivElement | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // --- LocalStorage Persistence ---
+  const STORAGE_KEY = "catalyst_booking_draft";
+
+  // Load draft from localStorage on mount
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft);
+        if (draft.selectedDate) setSelectedDate(draft.selectedDate);
+        if (draft.eventType) setEventType(draft.eventType);
+        if (draft.venueAddress) setVenueAddress(draft.venueAddress);
+        if (draft.venueType) setVenueType(draft.venueType);
+        if (draft.guestCount) setGuestCount(draft.guestCount);
+        if (draft.selectedPackageId) setSelectedPackageId(draft.selectedPackageId);
+        if (draft.selectedDrinkChoiceId) setSelectedDrinkChoiceId(draft.selectedDrinkChoiceId);
+        if (draft.additionalCocktails !== undefined) setAdditionalCocktails(draft.additionalCocktails);
+        if (draft.additionalDrinks) setAdditionalDrinks(draft.additionalDrinks);
+        if (draft.extraHours !== undefined) setExtraHours(draft.extraHours);
+        if (draft.customCocktailItems) setCustomCocktailItems(draft.customCocktailItems);
+        if (draft.selectedCocktailMenus) setSelectedCocktailMenus(draft.selectedCocktailMenus);
+        if (draft.contactFirstName) setContactFirstName(draft.contactFirstName);
+        if (draft.contactLastName) setContactLastName(draft.contactLastName);
+        if (draft.contactEmail) setContactEmail(draft.contactEmail);
+        if (draft.contactPhone) setContactPhone(draft.contactPhone);
+        if (draft.contactNote) setContactNote(draft.contactNote);
+        
+        // currentStep은 마지막에 설정하여 다른 상태들이 로드된 후 적용되게 함
+        if (draft.currentStep) setCurrentStep(draft.currentStep);
+      } catch (e) {
+        console.error("Failed to load booking draft", e);
+      }
+    }
+    setIsInitialized(true);
+  }, []);
+
+  // Save draft to localStorage whenever relevant state changes
+  useEffect(() => {
+    if (!isInitialized || isSubmitted) {
+      if (isSubmitted) localStorage.removeItem(STORAGE_KEY);
+      return;
+    }
+
+    const draft = {
+      currentStep,
+      selectedDate,
+      eventType,
+      venueAddress,
+      venueType,
+      guestCount,
+      selectedPackageId,
+      selectedDrinkChoiceId,
+      additionalCocktails,
+      additionalDrinks,
+      extraHours,
+      customCocktailItems,
+      selectedCocktailMenus,
+      contactFirstName,
+      contactLastName,
+      contactEmail,
+      contactPhone,
+      contactNote,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+  }, [
+    currentStep,
+    selectedDate,
+    eventType,
+    venueAddress,
+    venueType,
+    guestCount,
+    selectedPackageId,
+    selectedDrinkChoiceId,
+    additionalCocktails,
+    additionalDrinks,
+    extraHours,
+    customCocktailItems,
+    selectedCocktailMenus,
+    contactFirstName,
+    contactLastName,
+    contactEmail,
+    contactPhone,
+    contactNote,
+    isSubmitted,
+    isInitialized,
+  ]);
+  // --------------------------------
 
   const calendarDays = useMemo(
     () => buildCalendarDays(viewMonth, earliestBookableDate),
