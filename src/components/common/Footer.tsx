@@ -29,7 +29,12 @@ export function Footer() {
               Crafting sophisticated mobile bar experiences where expert mixology meets seamless, end-to-end service.
             </p>
             <div className="mt-10 flex gap-6">
-              <a href="#" className="text-[#7C826F] transition hover:text-[#303520]">
+              <a 
+                href="https://www.instagram.com/catalystmobilebar" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[#7C826F] transition hover:text-[#303520]"
+              >
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Instagram</span>
               </a>
             </div>
@@ -47,6 +52,9 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/booking" className="text-sm text-[#7C826F] transition hover:text-[#303520]">Book Inquiry</Link>
+              </li>
+              <li>
+                <Link href="/faqs" className="text-sm text-[#7C826F] transition hover:text-[#303520]">FAQs</Link>
               </li>
             </ul>
           </div>

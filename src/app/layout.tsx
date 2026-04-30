@@ -8,11 +8,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://catalystbar.ca"),
   title: {
-    default: "The Catalyst Mobile Bar | Vancouver Premium Pop-up Bar",
+    default: "The Catalyst Mobile Bar | Vancouver Premium Mobile Bar",
     template: "%s | The Catalyst Mobile Bar",
   },
   description: "Elevating the energy of every event with artistic cocktail designs and premium mobile bar services in Vancouver, BC.",
-  keywords: ["Mobile Bar Vancouver", "Wedding Bartender BC", "Event Mixology", "Pop-up Bar", "Craft Cocktails Vancouver"],
+  keywords: ["Mobile Bar Vancouver", "Wedding Bartender BC", "Event Mixology", "Mobile Bar", "Craft Cocktails Vancouver"],
   authors: [{ name: "The Catalyst Mobile Bar" }],
   creator: "The Catalyst Mobile Bar",
   openGraph: {
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     locale: "en_CA",
     url: "https://catalystbar.ca",
     siteName: "The Catalyst Mobile Bar",
-    title: "The Catalyst Mobile Bar | Vancouver Premium Pop-up Bar",
+    title: "The Catalyst Mobile Bar | Vancouver Premium Mobile Bar",
     description: "Elevating the energy of every event with artistic cocktail designs and premium mobile bar services in Vancouver, BC.",
     images: [
       {
@@ -33,21 +33,21 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Catalyst Mobile Bar | Vancouver Premium Pop-up Bar",
+    title: "The Catalyst Mobile Bar | Vancouver Premium Mobile Bar",
     description: "Elevating the energy of every event with artistic cocktail designs and premium mobile bar services in Vancouver, BC.",
     images: ["/images/og-image.jpg"],
   },
   icons: {
     icon: [
       { url: "/favicon.ico" },
-      { url: "/icon1.png", sizes: "32x32", type: "image/png" },
-      { url: "/icon0.svg", type: "image/svg+xml" },
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
     ],
     apple: [
-      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
   },
-  manifest: "/manifest.json",
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
