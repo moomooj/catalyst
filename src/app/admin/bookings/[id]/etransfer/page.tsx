@@ -1,14 +1,14 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/admin";
-import { getBookingById, syncBookingPaymentStatusService } from "@/features/booking/service";
+import { getBookingById } from "@/features/booking/service";
 import { EmailActions } from "../EmailActions";
 
 type PageProps = {
   params: Promise<{ id: string }>;
 };
 
-export default async function PaymentInfoPage({ params }: PageProps) {
+export default async function ETransferPage({ params }: PageProps) {
   await requireAdmin();
 
   const { id } = await params;
@@ -17,33 +17,16 @@ export default async function PaymentInfoPage({ params }: PageProps) {
     notFound();
   }
 
-  // Sync with Stripe before fetching booking data
-  await syncBookingPaymentStatusService(bookingId);
-
   const booking = await getBookingById(bookingId);
   if (!booking) {
     notFound();
   }
 
-  // Price calculation logic (consistent with detail page)
+  // Price calculation logic
   const isPremium = booking.package.trim().toLowerCase().includes("premium") || 
                     booking.package.trim().toLowerCase().includes("all inclusive");
-  const basePrice = isPremium ? booking.estimatedTotal : 1000;
-  const extraHours = !isPremium ? Math.max(0, booking.hours - 4) : 0;
-  const extraCocktails = !isPremium ? Math.max(0, booking.cocktailNumber - 2) : 0;
-  const dryHireExtras = (extraHours * 250) + (extraCocktails * 250);
   
-  const savedOptions = Array.isArray(booking.options) ? (booking.options as any[]) : [];
-  const savedTaxes = Array.isArray(booking.taxes) ? (booking.taxes as any[]) : [];
-  
-  const optionTotal = savedOptions.reduce((sum, opt) => sum + (opt.price || 0), 0);
-  const subtotalWithOptions = basePrice + dryHireExtras + optionTotal;
-  const taxTotal = savedTaxes.reduce(
-    (sum, tax) => sum + Math.round((subtotalWithOptions * (tax.percentage || 0)) / 100),
-    0
-  );
-  
-  const totalWithTax = subtotalWithOptions + taxTotal;
+  const totalWithTax = booking.total || 0;
   const totalPaid = booking.finalPaid ? totalWithTax : (booking.depositPaid ? (booking.depositAmount || 0) : 0);
   const totalDue = Math.max(0, totalWithTax - totalPaid);
 
@@ -69,10 +52,10 @@ export default async function PaymentInfoPage({ params }: PageProps) {
   return (
     <main className="min-h-dvh bg-[#EAE8E4] px-6 py-12 text-[#303520]">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-        {/* Simplified Header */}
+        {/* Header */}
         <header className="rounded-none bg-[#D6D5CE] p-8 shadow-sm flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className={sectionTitleClass}>Payment Management</p>
+            <p className={sectionTitleClass}>E-Transfer Management</p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight">
               {booking.name}
             </h1>
@@ -85,10 +68,10 @@ export default async function PaymentInfoPage({ params }: PageProps) {
           </Link>
         </header>
 
-        {/* Payment Summary Section (Light & Professional) */}
+        {/* Summary Card */}
         <section className="rounded-none border-t-4 border-[#7C826F] bg-[#FDFCF8] p-8 shadow-sm">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7C826F]">
-            Payment Summary
+            Manual Payment Summary (E-Transfer)
           </p>
           <div className="mt-8 grid gap-8 md:grid-cols-3">
             <div>
@@ -109,7 +92,7 @@ export default async function PaymentInfoPage({ params }: PageProps) {
         {/* Payment Status Section */}
         <section className={cardClass}>
           <p className={sectionTitleClass}>Payment Status</p>
-          <div className="mt-6 grid gap-6 md:grid-cols-3">
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
             <div className="rounded-md border border-[#E0D9C9] bg-[#FDFCF8] p-4 text-center">
               <p className="text-xs text-[#7C826F]">Deposit Status</p>
               <p className="mt-2 font-semibold uppercase">{booking.depositPaid ? "PAID" : "PENDING"}</p>
@@ -118,14 +101,10 @@ export default async function PaymentInfoPage({ params }: PageProps) {
               <p className="text-xs text-[#7C826F]">Final Payment</p>
               <p className="mt-2 font-semibold uppercase">{booking.finalPaid ? "PAID" : "PENDING"}</p>
             </div>
-            <div className="rounded-md border border-[#E0D9C9] bg-[#FDFCF8] p-4 text-center">
-              <p className="text-xs text-[#7C826F]">Stripe Status</p>
-              <p className="mt-2 font-semibold uppercase">{booking.paymentStatus}</p>
-            </div>
           </div>
         </section>
 
-        {/* Email Actions Section */}
+        {/* Email Communications Section */}
         <section className={cardClass}>
           <p className={sectionTitleClass}>Email Communications</p>
           <div className="mt-6">
@@ -139,7 +118,7 @@ export default async function PaymentInfoPage({ params }: PageProps) {
           </div>
         </section>
 
-        {/* Payment History Section (New) */}
+        {/* Payment History Section */}
         <section className={cardClass}>
           <p className={sectionTitleClass}>Payment History</p>
           <div className="mt-6 space-y-6">
@@ -156,7 +135,7 @@ export default async function PaymentInfoPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Dynamic History Logs (Email Sends & Payments) */}
+            {/* Dynamic History Logs */}
             {historyLogs.map((log, idx) => (
               <div key={`log-${idx}`} className="relative flex gap-4 pb-6">
                 <div className="absolute left-[7px] top-2 h-full w-[2px] bg-[#ECE8DD]"></div>
@@ -182,31 +161,6 @@ export default async function PaymentInfoPage({ params }: PageProps) {
                 </div>
               </div>
             )}
-          </div>
-        </section>
-
-        {/* Other Options Section */}
-        <section className={cardClass}>
-          <p className={sectionTitleClass}>Additional Options</p>
-          <div className="mt-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-[#ECE8DD] pb-4">
-              <div>
-                <p className="font-medium">Manual Adjustment</p>
-                <p className="text-xs text-[#7C826F]">Override the total amount or add discounts</p>
-              </div>
-              <button className="text-xs font-medium text-[#7C826F] underline opacity-50 cursor-not-allowed">
-                Open Adjustments
-              </button>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Refund Process</p>
-                <p className="text-xs text-[#7C826F]">Issue a partial or full refund through Stripe</p>
-              </div>
-              <button className="text-xs font-medium text-[#8B2E2E] underline opacity-50 cursor-not-allowed">
-                Refund Settings
-              </button>
-            </div>
           </div>
         </section>
       </div>

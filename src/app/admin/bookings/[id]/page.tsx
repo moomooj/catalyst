@@ -210,6 +210,12 @@ export default async function BookingDetailPage({
                     Payment Info
                   </Link>
                   <Link
+                    href={`/admin/bookings/${booking.id}/etransfer`}
+                    className="rounded-full border border-[#7C826F] px-5 py-2 text-xs font-medium text-[#7C826F] transition hover:bg-white"
+                  >
+                    E-Transfer
+                  </Link>
+                  <Link
                     href={`/admin/bookings/${booking.id}?edit=1`}
                     className="rounded-full bg-[#7C826F] px-5 py-2 text-xs font-medium text-white"
                   >
