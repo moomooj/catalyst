@@ -1,40 +1,76 @@
 "use client";
 
 import { useState } from "react";
-import { Playfair_Display, Raleway } from "next/font/google";
+import { Raleway } from "next/font/google";
 
-const playfair = Playfair_Display({ subsets: ["latin"], display: "swap" });
-const raleway = Raleway({ subsets: ["latin"], display: "swap" });
+const raleway = Raleway({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+type FaqAnswerBlock =
+  | { readonly type: "paragraph"; readonly text: string }
+  | { readonly type: "list"; readonly items: readonly string[] };
 
 interface FaqItemProps {
   question: string;
-  answer: string;
+  answer: string | readonly FaqAnswerBlock[];
+}
+
+function FaqAnswer({ answer }: { answer: FaqItemProps["answer"] }) {
+  if (typeof answer === "string") {
+    return (
+      <p className={`${raleway.className} text-sm leading-relaxed text-[#7C826F] md:text-base`}>
+        {answer}
+      </p>
+    );
+  }
+
+  return (
+    <div className={`${raleway.className} space-y-4 text-sm leading-relaxed text-[#7C826F] md:text-base`}>
+      {answer.map((block, index) =>
+        block.type === "paragraph" ? (
+          <p key={`${block.type}-${index}`}>{block.text}</p>
+        ) : (
+          <ul key={`${block.type}-${index}`} className="space-y-2">
+            {block.items.map((item) => (
+              <li key={item} className="flex gap-3">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#7C826F]" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        ),
+      )}
+    </div>
+  );
 }
 
 function FaqItem({ question, answer }: FaqItemProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="group border-b border-[#D6CAB7]/30 last:border-0">
+    <div className="group rounded-md border border-[#D6CAB7]/50 bg-[#FDFCFB] shadow-sm transition-colors hover:border-[#7C826F]/50">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-start justify-between py-8 text-left transition-all"
+        className="flex w-full items-start justify-between gap-6 px-5 py-5 text-left transition-all md:px-7 md:py-6"
       >
-        <span className={`${playfair.className} text-xl md:text-2xl font-light text-[#303520] transition-colors group-hover:text-[#7C826F]`}>
+        <span className={`${raleway.className} text-base font-medium leading-snug tracking-tight text-[#303520] transition-colors group-hover:text-[#7C826F] md:text-lg`}>
           {question}
         </span>
-        <span className={`ml-4 mt-1 text-xl font-light transition-transform duration-500 ${isOpen ? "rotate-45 text-[#7C826F]" : "rotate-0 text-[#D6CAB7]"}`}>
+        <span className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#D6CAB7] text-lg font-light transition-all duration-300 ${isOpen ? "rotate-45 bg-[#7C826F] text-white" : "rotate-0 text-[#7C826F]"}`}>
           +
         </span>
       </button>
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          isOpen ? "max-h-96 pb-8 opacity-100" : "max-h-0 opacity-0"
+          isOpen ? "max-h-[48rem] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <p className={`${raleway.className} max-w-2xl text-base md:text-lg leading-relaxed text-[#7C826F] font-light`}>
-          {answer}
-        </p>
+        <div className="border-t border-[#D6CAB7]/30 px-5 py-5 md:px-7 md:py-6">
+          <FaqAnswer answer={answer} />
+        </div>
       </div>
     </div>
   );
@@ -42,36 +78,32 @@ function FaqItem({ question, answer }: FaqItemProps) {
 
 interface FaqSection {
   category: string;
-  items: FaqItemProps[];
+  items: readonly FaqItemProps[];
 }
 
-export default function FaqAccordion({ faqs }: { faqs: FaqSection[] }) {
+export default function FaqAccordion({ faqs }: { faqs: readonly FaqSection[] }) {
   return (
-    <div className="space-y-32">
+    <div className="space-y-20">
       {faqs.map((section) => (
-        <div key={section.category} className="grid gap-12 lg:grid-cols-12">
+        <section key={section.category} className="space-y-8">
           {/* Category Title */}
-          <div className="lg:col-span-4">
-            <div className="lg:sticky lg:top-32">
-              <p className={`${raleway.className} mb-4 text-[10px] font-bold tracking-[0.3em] uppercase text-[#7C826F]/60`}>
-                The Details
-              </p>
-              <h2 className={`${playfair.className} text-3xl md:text-4xl font-light text-[#303520]`}>
-                {section.category}
-              </h2>
-              <div className="mt-8 h-px w-12 bg-[#D6CAB7]" />
-            </div>
+          <div>
+            <p className={`${raleway.className} mb-4 text-[10px] font-bold tracking-[0.3em] uppercase text-[#7C826F]/60`}>
+              The Details
+            </p>
+            <h2 className={`${raleway.className} text-2xl font-light leading-tight tracking-tight text-[#303520] md:text-4xl`}>
+              {section.category}
+            </h2>
+            <div className="mt-6 h-px w-12 bg-[#D6CAB7]" />
           </div>
 
           {/* FAQ Items */}
-          <div className="lg:col-span-8">
-            <div className="divide-y divide-[#D6CAB7]/30">
-              {section.items.map((item, idx) => (
-                <FaqItem key={idx} {...item} />
-              ))}
-            </div>
+          <div className="grid gap-4">
+            {section.items.map((item, idx) => (
+              <FaqItem key={idx} {...item} />
+            ))}
           </div>
-        </div>
+        </section>
       ))}
     </div>
   );
