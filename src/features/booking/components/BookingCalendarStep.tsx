@@ -1046,7 +1046,6 @@ export function BookingCalendarStep({
                   <>
                     <li>- Venue Information</li>
                     <li>- (No Liquor Purchase Required)</li>
-                    <li>- (No Permit Application Required)</li>
                   </>
                 ) : (
                   <>
