@@ -26,7 +26,7 @@ export function Footer() {
                 className="w-[160px] h-auto"
               />            </Link>
             <p className="mt-8 max-w-sm text-base leading-relaxed text-[#7C826F]">
-              Crafting sophisticated mobile bar experiences where expert mixology meets seamless, end-to-end service.
+              Licensed beverage services may be fulfilled through hospitality partnership operations in accordance with applicable BC liquor regulations.
             </p>
             <div className="mt-10 flex gap-6">
               <a 

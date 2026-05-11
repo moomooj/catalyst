@@ -73,13 +73,15 @@ const packageOptions = [
 ] as const;
 
 const dryHireIncludedItems = [
-  "2 bartenders",
-  "2 cocktails",
+  "2 professional bartenders",
+  "2 cocktails, + highballs based off the base spirits chosen",
   "4 hours service",
-  "Basic garnishes (dehydrated fruit slices)",
-  "Mixers (soda, juice) and Ice",
+  "Basic garnishes",
+  "Mixers (soda, juice, syrups) and ice",
   "Disposable cups, straws, napkins",
-  "Portable bar setup and supplies",
+  "Portable bar setup available",
+  "Bartending equipment",
+  "Shopping list provided with drink consultation",
   "Setup and Take Down",
 ] as const;
 
@@ -374,16 +376,16 @@ export function BookingCalendarStep({
         extraHoursTotal;
   const allInclusiveIncludedItems = [
     `${additionalDrinksCount} Drinks Guaranteed`,
-    "Liquor Included (Vodka, Gin, Tequila, Whiskey, etc.)",
-    "Special Event Permit (SEP) Handling",
-    "2 to 4 Professional bartenders",
-    "2 cocktails",
+    "Liquor included",
+    "2 professional bartenders",
+    "2 cocktails, + highballs based off the base spirits chosen",
     "4 hours service",
-    "Basic garnishes (dehydrated fruit slices)",
-    "Mixers (Soda, Juice, House-made Syrups) and Ice",
-    "Disposable Cups, Straws, Napkins",
-    "Portable Bar Setup and Supplies",
-    "Setup and Take Down",
+    "Custom garnishes",
+    "Mixers (soda, juice, syrups) and ice",
+    "Disposable cups, straws, napkins",
+    "Portable bar setup available",
+    "Bartending equipment",
+    "Hydration Station",
   ];
   const includedItems =
     selectedPackageId === "premium"
