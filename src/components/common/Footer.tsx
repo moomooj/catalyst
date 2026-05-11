@@ -57,6 +57,9 @@ export function Footer() {
                 <Link href="/booking" className="text-sm text-[#7C826F] transition hover:text-[#303520]">Book Inquiry</Link>
               </li>
               <li>
+                <Link href="/booking/lookup" className="text-sm text-[#7C826F] transition hover:text-[#303520]">Check Booking</Link>
+              </li>
+              <li>
                 <Link href="/faqs" className="text-sm text-[#7C826F] transition hover:text-[#303520]">FAQs</Link>
               </li>
             </ul>
@@ -66,7 +69,7 @@ export function Footer() {
           <div className="md:col-span-4">
             <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#303520]">Service Areas</h3>
             <p className="mt-8 text-sm leading-relaxed text-[#7C826F]">
-              Greater Vancouver, Whistler, Fraser Valley, and the Sunshine Coast. Available for travel across British Columbia.
+              Based in Vancouver, exclusively serving the Greater Vancouver area.
             </p>
             <div className="mt-8 space-y-6">
               <div>

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { DeleteBookingButton } from "./DeleteBookingButton";
 import { useState } from "react";
 import { restoreBookingAction } from "@/features/booking/actions";
+import { formatBookingDateLabel } from "@/features/booking/date";
 
 type Props = {
   booking: {
@@ -17,14 +18,6 @@ type Props = {
   };
   isTrash?: boolean;
 };
-
-function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  }).format(new Date(date));
-}
 
 function formatStatus(status: string) {
   return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
@@ -54,7 +47,7 @@ export function BookingRow({ booking, isTrash }: Props) {
         alert(result.error);
         setIsRestoring(false);
       }
-    } catch (err) {
+    } catch {
       alert("Restore failed.");
       setIsRestoring(false);
     }
@@ -70,7 +63,7 @@ export function BookingRow({ booking, isTrash }: Props) {
       </td>
       <td className="px-4 py-4">
         <span className="block text-xs font-medium uppercase tracking-[0.15em] text-[#7C826F] group-hover:text-[#303520]">
-          {formatDate(booking.date)}
+          {formatBookingDateLabel(booking.date)}
         </span>
       </td>
       <td className="px-4 py-4 font-medium text-[#303520]">
