@@ -1,9 +1,10 @@
 import { db } from "@/lib/db";
+import { shouldSeedEditableDefaults } from "./defaults";
 import { formatDateInput } from "./format";
 import { FALLBACK_CATEGORY_NAME, FALLBACK_UNIT_NAME } from "./optionRules";
 
-const DEFAULT_CATEGORIES = ["Alcohol", "Mixer", "Garnish", "Disposable", "Equipment", FALLBACK_CATEGORY_NAME];
-const DEFAULT_UNITS = [FALLBACK_UNIT_NAME, "bottle", "case", "pack", "piece", "liter", "box"];
+const EDITABLE_DEFAULT_CATEGORIES = ["Alcohol", "Mixer", "Garnish", "Disposable", "Equipment"];
+const EDITABLE_DEFAULT_UNITS = ["bottle", "case", "pack", "piece", "liter", "box"];
 
 export type InventoryOption = {
   id: number;
@@ -29,19 +30,31 @@ export type InventoryItemView = {
 };
 
 export async function ensureDefaultInventoryData() {
+  const [categoryCount, unitCount] = await Promise.all([
+    db.inventoryCategory.count(),
+    db.inventoryUnit.count(),
+  ]);
+
+  const categoryNames = shouldSeedEditableDefaults(categoryCount)
+    ? [...EDITABLE_DEFAULT_CATEGORIES, FALLBACK_CATEGORY_NAME]
+    : [FALLBACK_CATEGORY_NAME];
+  const unitNames = shouldSeedEditableDefaults(unitCount)
+    ? [FALLBACK_UNIT_NAME, ...EDITABLE_DEFAULT_UNITS]
+    : [FALLBACK_UNIT_NAME];
+
   await Promise.all([
-    ...DEFAULT_CATEGORIES.map((name) =>
+    ...categoryNames.map((name) =>
       db.inventoryCategory.upsert({
         where: { name },
         create: { name, isSystem: name === FALLBACK_CATEGORY_NAME },
-        update: { isActive: true },
+        update: name === FALLBACK_CATEGORY_NAME ? { isActive: true } : {},
       }),
     ),
-    ...DEFAULT_UNITS.map((name) =>
+    ...unitNames.map((name) =>
       db.inventoryUnit.upsert({
         where: { name },
         create: { name, isSystem: name === FALLBACK_UNIT_NAME },
-        update: { isActive: true },
+        update: name === FALLBACK_UNIT_NAME ? { isActive: true } : {},
       }),
     ),
   ]);
