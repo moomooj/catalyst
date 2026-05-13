@@ -18,6 +18,7 @@ import {
   formatOrderPriceLabel,
 } from "../format";
 import { isProtectedInventoryOption } from "../optionRules";
+import { getInventoryPageCount, getInventoryPageItems } from "../pagination";
 import { filterInventoryItems } from "../search";
 import type { InventoryItemView, InventoryOption } from "../service";
 import { selectInventoryItemsByDeletedState } from "../visibility";
@@ -27,6 +28,11 @@ type InventoryManagerProps = {
   categories: InventoryOption[];
   units: InventoryOption[];
 };
+
+type PendingRemoval =
+  | { type: "item"; id: number; name: string; title: string; description: string; confirmLabel: string }
+  | { type: "category"; id: number; name: string; title: string; description: string; confirmLabel: string }
+  | { type: "unit"; id: number; name: string; title: string; description: string; confirmLabel: string };
 
 const statusLabels: Record<InventoryItemView["stockStatus"], string> = {
   LOW: "Low",
@@ -39,6 +45,8 @@ const statusStyles: Record<InventoryItemView["stockStatus"], string> = {
   MEDIUM: "border-[#D6CAB7] bg-[#F9F8F6] text-[#7C826F]",
   OVERSTOCK: "border-[#9EAD82] bg-[#EEF3E6] text-[#4F5F3A]",
 };
+
+const INVENTORY_PAGE_SIZE = 20;
 
 function centsToInputValue(cents: number) {
   return (cents / 100).toFixed(2);
@@ -56,14 +64,19 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
   const [isListsModalOpen, setIsListsModalOpen] = useState(false);
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
   const [editingUnitId, setEditingUnitId] = useState<number | null>(null);
+  const [pendingRemoval, setPendingRemoval] = useState<PendingRemoval | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilterId, setCategoryFilterId] = useState<number | undefined>();
   const [showDeleted, setShowDeleted] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState("");
   const [listError, setListError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]> | undefined>();
   const visibleItems = selectInventoryItemsByDeletedState(items, showDeleted);
   const filteredItems = filterInventoryItems(visibleItems, searchQuery, categoryFilterId);
+  const pageCount = getInventoryPageCount(filteredItems.length, INVENTORY_PAGE_SIZE);
+  const activePage = Math.min(currentPage, pageCount);
+  const pagedItems = getInventoryPageItems(filteredItems, activePage, INVENTORY_PAGE_SIZE);
   const hasActiveFilter = searchQuery.trim().length > 0 || Boolean(categoryFilterId);
 
   function openModal(item: InventoryItemView | null) {
@@ -112,18 +125,46 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
   }
 
   function handleDeactivate(item: InventoryItemView) {
-    const confirmed = window.confirm(`Remove ${item.name} from active inventory?`);
-    if (!confirmed) return;
+    setPendingRemoval({
+      type: "item",
+      id: item.id,
+      name: item.name,
+      title: "Remove Inventory Item",
+      description: `${item.name} will move to the trash. You can restore it later from the deleted view.`,
+      confirmLabel: "Remove Item",
+    });
+  }
 
+  function confirmRemoval() {
+    if (!pendingRemoval) return;
     const formData = new FormData();
-    formData.set("id", String(item.id));
+    formData.set("id", String(pendingRemoval.id));
 
     startTransition(async () => {
-      const result = await deactivateInventoryItemAction(null, formData);
+      const result =
+        pendingRemoval.type === "item"
+          ? await deactivateInventoryItemAction(null, formData)
+          : pendingRemoval.type === "category"
+            ? await deactivateInventoryCategoryAction(null, formData)
+            : await deactivateInventoryUnitAction(null, formData);
+
       if (!result.ok) {
-        setError(result.error ?? "Inventory item could not be removed.");
+        const fallbackError =
+          pendingRemoval.type === "item"
+            ? "Inventory item could not be removed."
+            : pendingRemoval.type === "category"
+              ? "Category could not be removed."
+              : "Unit could not be removed.";
+        if (pendingRemoval.type === "item") {
+          setError(result.error ?? fallbackError);
+        } else {
+          setListError(result.error ?? fallbackError);
+        }
         return;
       }
+      setPendingRemoval(null);
+      setError("");
+      setListError("");
       router.refresh();
     });
   }
@@ -180,20 +221,13 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
       return;
     }
 
-    const confirmed = window.confirm(`Remove ${category.name}? Items using it will move to Uncategorized.`);
-    if (!confirmed) return;
-
-    const formData = new FormData();
-    formData.set("id", String(category.id));
-
-    startTransition(async () => {
-      const result = await deactivateInventoryCategoryAction(null, formData);
-      if (!result.ok) {
-        setListError(result.error ?? "Category could not be removed.");
-        return;
-      }
-      setListError("");
-      router.refresh();
+    setPendingRemoval({
+      type: "category",
+      id: category.id,
+      name: category.name,
+      title: "Remove Category",
+      description: `${category.name} will be removed from the active category list. Items using it will move to Uncategorized.`,
+      confirmLabel: "Remove Category",
     });
   }
 
@@ -203,20 +237,13 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
       return;
     }
 
-    const confirmed = window.confirm(`Remove ${unit.name}? Items using it will move to unit.`);
-    if (!confirmed) return;
-
-    const formData = new FormData();
-    formData.set("id", String(unit.id));
-
-    startTransition(async () => {
-      const result = await deactivateInventoryUnitAction(null, formData);
-      if (!result.ok) {
-        setListError(result.error ?? "Unit could not be removed.");
-        return;
-      }
-      setListError("");
-      router.refresh();
+    setPendingRemoval({
+      type: "unit",
+      id: unit.id,
+      name: unit.name,
+      title: "Remove Unit",
+      description: `${unit.name} will be removed from the active unit list. Items using it will move to unit.`,
+      confirmLabel: "Remove Unit",
     });
   }
 
@@ -229,7 +256,10 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
             <input
               type="search"
               value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
+              onChange={(event) => {
+                setSearchQuery(event.target.value);
+                setCurrentPage(1);
+              }}
               placeholder="Search inventory"
               className="w-full border border-[#D6CAB7] bg-[#FDFCF9] px-4 py-3 text-sm text-[#303520] outline-none transition placeholder:text-[#B1AA9A] focus:border-[#7C826F]"
             />
@@ -238,7 +268,10 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
             <span className="sr-only">Filter by category</span>
             <select
               value={categoryFilterId ?? ""}
-              onChange={(event) => setCategoryFilterId(event.target.value ? Number(event.target.value) : undefined)}
+              onChange={(event) => {
+                setCategoryFilterId(event.target.value ? Number(event.target.value) : undefined);
+                setCurrentPage(1);
+              }}
               className="w-full border border-[#D6CAB7] bg-[#FDFCF9] px-4 py-3 text-sm text-[#303520] outline-none transition focus:border-[#7C826F]"
             >
               <option value="">All Categories</option>
@@ -253,7 +286,10 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
         <div className="flex flex-wrap gap-3">
           <button
             type="button"
-            onClick={() => setShowDeleted((current) => !current)}
+            onClick={() => {
+              setShowDeleted((current) => !current);
+              setCurrentPage(1);
+            }}
             aria-pressed={showDeleted}
             className={`inline-flex items-center gap-2 border px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] transition ${
               showDeleted
@@ -319,7 +355,7 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
                   </td>
                 </tr>
               ) : (
-                filteredItems.map((item) => (
+                pagedItems.map((item) => (
                   <tr key={item.id} className="border-b border-[#EFE9E1] last:border-b-0">
                     <td className="px-5 py-4 font-medium text-[#303520]">{item.name}</td>
                     <td className="px-5 py-4 text-[#7C826F]">{item.categoryName}</td>
@@ -387,6 +423,36 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
           </table>
         </div>
       </div>
+
+      {filteredItems.length > INVENTORY_PAGE_SIZE ? (
+        <div className="flex flex-wrap items-center justify-between gap-4 border border-t-0 border-[#D6CAB7] bg-white px-5 py-4">
+          <p className="text-xs text-[#7C826F]">
+            Showing {(activePage - 1) * INVENTORY_PAGE_SIZE + 1}-
+            {Math.min(activePage * INVENTORY_PAGE_SIZE, filteredItems.length)} of {filteredItems.length}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={activePage === 1}
+              className="border border-[#D6CAB7] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#7C826F] hover:border-[#7C826F] disabled:opacity-40"
+            >
+              Previous
+            </button>
+            <span className="px-3 text-xs text-[#7C826F]">
+              Page {activePage} of {pageCount}
+            </span>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))}
+              disabled={activePage === pageCount}
+              className="border border-[#D6CAB7] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#7C826F] hover:border-[#7C826F] disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {isModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#303520]/35 px-4 py-8">
@@ -734,6 +800,50 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
                   </div>
                 </div>
               </section>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {pendingRemoval ? (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#303520]/40 px-4 py-8">
+          <div className="w-full max-w-md border border-[#D6CAB7] bg-[#FDFCF9] p-6 shadow-2xl">
+            <div className="flex items-start gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#B86B5D] bg-[#F8E9E5] text-[#7C332B]">
+                <svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4h8v2" />
+                  <path d="M6 6l1 15h10l1-15" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#B86B5D]">
+                  Confirm Remove
+                </p>
+                <h2 className="mt-1 text-xl font-light text-[#303520]">{pendingRemoval.title}</h2>
+                <p className="mt-3 text-sm leading-6 text-[#7C826F]">{pendingRemoval.description}</p>
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-end gap-3 border-t border-[#D6CAB7] pt-5">
+              <button
+                type="button"
+                onClick={() => setPendingRemoval(null)}
+                disabled={isPending}
+                className="border border-[#D6CAB7] px-5 py-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#7C826F] hover:border-[#7C826F] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmRemoval}
+                disabled={isPending}
+                className="border border-[#B86B5D] bg-[#B86B5D] px-5 py-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white hover:bg-[#7C332B] disabled:opacity-50"
+              >
+                {isPending ? "Removing" : pendingRemoval.confirmLabel}
+              </button>
             </div>
           </div>
         </div>
