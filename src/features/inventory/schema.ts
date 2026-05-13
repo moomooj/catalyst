@@ -17,4 +17,10 @@ export const inventoryItemFormSchema = z.object({
   isActive: z.boolean(),
 });
 
+export const inventoryOptionFormSchema = z.object({
+  id: z.coerce.number().int().positive().optional(),
+  name: z.string().trim().min(1, "Name is required"),
+});
+
 export type InventoryItemFormValues = z.infer<typeof inventoryItemFormSchema>;
+export type InventoryOptionFormValues = z.infer<typeof inventoryOptionFormSchema>;

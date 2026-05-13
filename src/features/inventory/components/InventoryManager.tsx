@@ -1,14 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormEvent, useMemo, useState, useTransition } from "react";
+import { FormEvent, useState, useTransition } from "react";
 
-import { deactivateInventoryItemAction, upsertInventoryItemAction } from "../actions";
+import {
+  deactivateInventoryCategoryAction,
+  deactivateInventoryItemAction,
+  deactivateInventoryUnitAction,
+  upsertInventoryCategoryAction,
+  upsertInventoryItemAction,
+  upsertInventoryUnitAction,
+} from "../actions";
 import {
   formatCurrencyFromCents,
   formatDecimalLabel,
   formatOrderPriceLabel,
 } from "../format";
+import { isProtectedInventoryOption } from "../optionRules";
+import { filterInventoryItems } from "../search";
 import type { InventoryItemView, InventoryOption } from "../service";
 
 type InventoryManagerProps = {
@@ -42,10 +51,16 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
   const [isPending, startTransition] = useTransition();
   const [editingItem, setEditingItem] = useState<InventoryItemView | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isListsModalOpen, setIsListsModalOpen] = useState(false);
+  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
+  const [editingUnitId, setEditingUnitId] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilterId, setCategoryFilterId] = useState<number | undefined>();
   const [error, setError] = useState("");
+  const [listError, setListError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]> | undefined>();
-
-  const itemCountLabel = useMemo(() => `${items.length} ${items.length === 1 ? "Item" : "Items"}`, [items.length]);
+  const filteredItems = filterInventoryItems(items, searchQuery, categoryFilterId);
+  const hasActiveFilter = searchQuery.trim().length > 0 || Boolean(categoryFilterId);
 
   function openModal(item: InventoryItemView | null) {
     setEditingItem(item);
@@ -59,6 +74,20 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
     setEditingItem(null);
     setError("");
     setFieldErrors(undefined);
+  }
+
+  function openListsModal() {
+    setListError("");
+    setEditingCategoryId(null);
+    setEditingUnitId(null);
+    setIsListsModalOpen(true);
+  }
+
+  function closeListsModal() {
+    setIsListsModalOpen(false);
+    setListError("");
+    setEditingCategoryId(null);
+    setEditingUnitId(null);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -95,22 +124,130 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
     });
   }
 
+  function handleCategorySubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
+    startTransition(async () => {
+      const result = await upsertInventoryCategoryAction(null, formData);
+      if (!result.ok) {
+        setListError(result.error ?? result.fieldErrors?.name?.[0] ?? "Category could not be saved.");
+        return;
+      }
+      setListError("");
+      setEditingCategoryId(null);
+      router.refresh();
+    });
+  }
+
+  function handleUnitSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
+    startTransition(async () => {
+      const result = await upsertInventoryUnitAction(null, formData);
+      if (!result.ok) {
+        setListError(result.error ?? result.fieldErrors?.name?.[0] ?? "Unit could not be saved.");
+        return;
+      }
+      setListError("");
+      setEditingUnitId(null);
+      router.refresh();
+    });
+  }
+
+  function handleCategoryDelete(category: InventoryOption) {
+    if (isProtectedInventoryOption(category.name, category.isSystem)) {
+      setListError("The fallback category cannot be removed.");
+      return;
+    }
+
+    const confirmed = window.confirm(`Remove ${category.name}? Items using it will move to Uncategorized.`);
+    if (!confirmed) return;
+
+    const formData = new FormData();
+    formData.set("id", String(category.id));
+
+    startTransition(async () => {
+      const result = await deactivateInventoryCategoryAction(null, formData);
+      if (!result.ok) {
+        setListError(result.error ?? "Category could not be removed.");
+        return;
+      }
+      setListError("");
+      router.refresh();
+    });
+  }
+
+  function handleUnitDelete(unit: InventoryOption) {
+    if (isProtectedInventoryOption(unit.name, unit.isSystem)) {
+      setListError("The fallback unit cannot be removed.");
+      return;
+    }
+
+    const confirmed = window.confirm(`Remove ${unit.name}? Items using it will move to unit.`);
+    if (!confirmed) return;
+
+    const formData = new FormData();
+    formData.set("id", String(unit.id));
+
+    startTransition(async () => {
+      const result = await deactivateInventoryUnitAction(null, formData);
+      if (!result.ok) {
+        setListError(result.error ?? "Unit could not be removed.");
+        return;
+      }
+      setListError("");
+      router.refresh();
+    });
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4 border border-[#D6CAB7] bg-white px-6 py-5">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#7C826F]">
-            Current Stock
-          </p>
-          <p className="mt-1 text-sm text-[#7C826F]">{itemCountLabel}</p>
+        <div className="flex min-w-[260px] flex-1 flex-wrap gap-3 md:max-w-2xl">
+          <label className="min-w-[220px] flex-1">
+            <span className="sr-only">Search inventory</span>
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search inventory"
+              className="w-full border border-[#D6CAB7] bg-[#FDFCF9] px-4 py-3 text-sm text-[#303520] outline-none transition placeholder:text-[#B1AA9A] focus:border-[#7C826F]"
+            />
+          </label>
+          <label className="min-w-[180px]">
+            <span className="sr-only">Filter by category</span>
+            <select
+              value={categoryFilterId ?? ""}
+              onChange={(event) => setCategoryFilterId(event.target.value ? Number(event.target.value) : undefined)}
+              className="w-full border border-[#D6CAB7] bg-[#FDFCF9] px-4 py-3 text-sm text-[#303520] outline-none transition focus:border-[#7C826F]"
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
-        <button
-          type="button"
-          onClick={() => openModal(null)}
-          className="border border-[#303520] bg-[#303520] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white transition hover:bg-[#7C826F]"
-        >
-          Add Item
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={openListsModal}
+            className="border border-[#7C826F] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#7C826F] transition hover:bg-[#7C826F] hover:text-white"
+          >
+            Manage Lists
+          </button>
+          <button
+            type="button"
+            onClick={() => openModal(null)}
+            className="border border-[#303520] bg-[#303520] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white transition hover:bg-[#7C826F]"
+          >
+            Add Item
+          </button>
+        </div>
       </div>
 
       {error && !isModalOpen ? (
@@ -134,14 +271,14 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
               </tr>
             </thead>
             <tbody>
-              {items.length === 0 ? (
+              {filteredItems.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-5 py-20 text-center text-sm text-[#7C826F]">
-                    No inventory items yet.
+                    {hasActiveFilter ? "No inventory items match your filters." : "No inventory items yet."}
                   </td>
                 </tr>
               ) : (
-                items.map((item) => (
+                filteredItems.map((item) => (
                   <tr key={item.id} className="border-b border-[#EFE9E1] last:border-b-0">
                     <td className="px-5 py-4 font-medium text-[#303520]">{item.name}</td>
                     <td className="px-5 py-4 text-[#7C826F]">{item.categoryName}</td>
@@ -361,6 +498,188 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      ) : null}
+
+      {isListsModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#303520]/35 px-4 py-8">
+          <div className="max-h-[90dvh] w-full max-w-5xl overflow-y-auto border border-[#D6CAB7] bg-[#FDFCF9] p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-6 border-b border-[#D6CAB7] pb-5">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#7C826F]">
+                  Inventory Lists
+                </p>
+                <h2 className="mt-1 text-2xl font-light text-[#303520]">
+                  Categories & Units
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={closeListsModal}
+                className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#7C826F] hover:text-[#303520]"
+              >
+                Close
+              </button>
+            </div>
+
+            {listError ? (
+              <div className="mt-5 border border-[#B86B5D] bg-[#F8E9E5] px-5 py-3 text-sm text-[#7C332B]">
+                {listError}
+              </div>
+            ) : null}
+
+            <div className="mt-6 grid gap-6 lg:grid-cols-2">
+              <section className="border border-[#D6CAB7] bg-white">
+                <div className="border-b border-[#D6CAB7] px-5 py-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7C826F]">Categories</p>
+                </div>
+                <div className="space-y-4 p-5">
+                  <form onSubmit={handleCategorySubmit} className="flex gap-3">
+                    <input
+                      name="name"
+                      placeholder="New category"
+                      className="min-w-0 flex-1 border border-[#D6CAB7] bg-white px-4 py-3 text-sm outline-none focus:border-[#7C826F]"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isPending}
+                      className="border border-[#303520] bg-[#303520] px-5 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-white disabled:opacity-50"
+                    >
+                      Add
+                    </button>
+                  </form>
+
+                  <div className="divide-y divide-[#EFE9E1] border border-[#EFE9E1]">
+                    {categories.map((category) => {
+                      const isEditing = editingCategoryId === category.id;
+                      const isProtected = isProtectedInventoryOption(category.name, category.isSystem);
+
+                      return (
+                        <div key={category.id} className="px-4 py-3">
+                          {isEditing ? (
+                            <form onSubmit={handleCategorySubmit} className="flex gap-3">
+                              <input type="hidden" name="id" value={category.id} />
+                              <input
+                                name="name"
+                                defaultValue={category.name}
+                                className="min-w-0 flex-1 border border-[#D6CAB7] bg-white px-3 py-2 text-sm outline-none focus:border-[#7C826F]"
+                              />
+                              <button type="submit" disabled={isPending} className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#7C826F] disabled:opacity-50">
+                                Save
+                              </button>
+                              <button type="button" onClick={() => setEditingCategoryId(null)} className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#B1AA9A]">
+                                Cancel
+                              </button>
+                            </form>
+                          ) : (
+                            <div className="flex items-center justify-between gap-4">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-medium text-[#303520]">{category.name}</p>
+                                {isProtected ? <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-[#B1AA9A]">Fallback</p> : null}
+                              </div>
+                              <div className="flex gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingCategoryId(category.id)}
+                                  disabled={isProtected}
+                                  className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#7C826F] hover:text-[#303520] disabled:text-[#B1AA9A]"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCategoryDelete(category)}
+                                  disabled={isProtected || isPending}
+                                  className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#B86B5D] hover:text-[#7C332B] disabled:text-[#B1AA9A]"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+
+              <section className="border border-[#D6CAB7] bg-white">
+                <div className="border-b border-[#D6CAB7] px-5 py-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7C826F]">Units</p>
+                </div>
+                <div className="space-y-4 p-5">
+                  <form onSubmit={handleUnitSubmit} className="flex gap-3">
+                    <input
+                      name="name"
+                      placeholder="New unit"
+                      className="min-w-0 flex-1 border border-[#D6CAB7] bg-white px-4 py-3 text-sm outline-none focus:border-[#7C826F]"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isPending}
+                      className="border border-[#303520] bg-[#303520] px-5 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-white disabled:opacity-50"
+                    >
+                      Add
+                    </button>
+                  </form>
+
+                  <div className="divide-y divide-[#EFE9E1] border border-[#EFE9E1]">
+                    {units.map((unit) => {
+                      const isEditing = editingUnitId === unit.id;
+                      const isProtected = isProtectedInventoryOption(unit.name, unit.isSystem);
+
+                      return (
+                        <div key={unit.id} className="px-4 py-3">
+                          {isEditing ? (
+                            <form onSubmit={handleUnitSubmit} className="flex gap-3">
+                              <input type="hidden" name="id" value={unit.id} />
+                              <input
+                                name="name"
+                                defaultValue={unit.name}
+                                className="min-w-0 flex-1 border border-[#D6CAB7] bg-white px-3 py-2 text-sm outline-none focus:border-[#7C826F]"
+                              />
+                              <button type="submit" disabled={isPending} className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#7C826F] disabled:opacity-50">
+                                Save
+                              </button>
+                              <button type="button" onClick={() => setEditingUnitId(null)} className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#B1AA9A]">
+                                Cancel
+                              </button>
+                            </form>
+                          ) : (
+                            <div className="flex items-center justify-between gap-4">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-medium text-[#303520]">{unit.name}</p>
+                                {isProtected ? <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-[#B1AA9A]">Fallback</p> : null}
+                              </div>
+                              <div className="flex gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingUnitId(unit.id)}
+                                  disabled={isProtected}
+                                  className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#7C826F] hover:text-[#303520] disabled:text-[#B1AA9A]"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUnitDelete(unit)}
+                                  disabled={isProtected || isPending}
+                                  className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#B86B5D] hover:text-[#7C332B] disabled:text-[#B1AA9A]"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+            </div>
           </div>
         </div>
       ) : null}

@@ -1,12 +1,14 @@
 import { db } from "@/lib/db";
 import { formatDateInput } from "./format";
+import { FALLBACK_CATEGORY_NAME, FALLBACK_UNIT_NAME } from "./optionRules";
 
-const DEFAULT_CATEGORIES = ["Alcohol", "Mixer", "Garnish", "Disposable", "Equipment", "Uncategorized"];
-const DEFAULT_UNITS = ["unit", "bottle", "case", "pack", "piece", "liter", "box"];
+const DEFAULT_CATEGORIES = ["Alcohol", "Mixer", "Garnish", "Disposable", "Equipment", FALLBACK_CATEGORY_NAME];
+const DEFAULT_UNITS = [FALLBACK_UNIT_NAME, "bottle", "case", "pack", "piece", "liter", "box"];
 
 export type InventoryOption = {
   id: number;
   name: string;
+  isSystem: boolean;
 };
 
 export type InventoryItemView = {
@@ -31,14 +33,14 @@ export async function ensureDefaultInventoryData() {
     ...DEFAULT_CATEGORIES.map((name) =>
       db.inventoryCategory.upsert({
         where: { name },
-        create: { name, isSystem: name === "Uncategorized" },
+        create: { name, isSystem: name === FALLBACK_CATEGORY_NAME },
         update: { isActive: true },
       }),
     ),
     ...DEFAULT_UNITS.map((name) =>
       db.inventoryUnit.upsert({
         where: { name },
-        create: { name, isSystem: name === "unit" },
+        create: { name, isSystem: name === FALLBACK_UNIT_NAME },
         update: { isActive: true },
       }),
     ),
@@ -81,7 +83,7 @@ export async function getInventoryPageData() {
       expirationDate: formatDateInput(item.expirationDate),
       isActive: item.isActive,
     })),
-    categories: categories.map((category): InventoryOption => ({ id: category.id, name: category.name })),
-    units: units.map((unit): InventoryOption => ({ id: unit.id, name: unit.name })),
+    categories: categories.map((category): InventoryOption => ({ id: category.id, name: category.name, isSystem: category.isSystem })),
+    units: units.map((unit): InventoryOption => ({ id: unit.id, name: unit.name, isSystem: unit.isSystem })),
   };
 }
