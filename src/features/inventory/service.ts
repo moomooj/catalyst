@@ -52,7 +52,6 @@ export async function getInventoryPageData() {
 
   const [items, categories, units] = await Promise.all([
     db.inventoryItem.findMany({
-      where: { isActive: true },
       include: { category: true, unit: true },
       orderBy: [{ name: "asc" }],
     }),

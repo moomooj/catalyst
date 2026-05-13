@@ -137,6 +137,28 @@ export async function deactivateInventoryItemAction(_prevState: InventoryActionS
   return { ok: true, message: "Inventory item removed." };
 }
 
+export async function restoreInventoryItemAction(_prevState: InventoryActionState | null, formData: FormData) {
+  await requireAdmin();
+
+  const id = Number(getString(formData, "id"));
+  if (!Number.isInteger(id) || id <= 0) {
+    return { ok: false, error: "Inventory item was not found." };
+  }
+
+  try {
+    await db.inventoryItem.update({
+      where: { id },
+      data: { isActive: true },
+    });
+  } catch (error) {
+    console.error("Inventory restore failed:", error);
+    return { ok: false, error: "Inventory item could not be restored." };
+  }
+
+  revalidatePath("/admin/inventory");
+  return { ok: true, message: "Inventory item restored." };
+}
+
 export async function upsertInventoryCategoryAction(_prevState: InventoryActionState | null, formData: FormData) {
   await requireAdmin();
 

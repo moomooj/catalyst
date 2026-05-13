@@ -7,6 +7,7 @@ import {
   deactivateInventoryCategoryAction,
   deactivateInventoryItemAction,
   deactivateInventoryUnitAction,
+  restoreInventoryItemAction,
   upsertInventoryCategoryAction,
   upsertInventoryItemAction,
   upsertInventoryUnitAction,
@@ -19,6 +20,7 @@ import {
 import { isProtectedInventoryOption } from "../optionRules";
 import { filterInventoryItems } from "../search";
 import type { InventoryItemView, InventoryOption } from "../service";
+import { selectInventoryItemsByDeletedState } from "../visibility";
 
 type InventoryManagerProps = {
   items: InventoryItemView[];
@@ -56,10 +58,12 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
   const [editingUnitId, setEditingUnitId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilterId, setCategoryFilterId] = useState<number | undefined>();
+  const [showDeleted, setShowDeleted] = useState(false);
   const [error, setError] = useState("");
   const [listError, setListError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]> | undefined>();
-  const filteredItems = filterInventoryItems(items, searchQuery, categoryFilterId);
+  const visibleItems = selectInventoryItemsByDeletedState(items, showDeleted);
+  const filteredItems = filterInventoryItems(visibleItems, searchQuery, categoryFilterId);
   const hasActiveFilter = searchQuery.trim().length > 0 || Boolean(categoryFilterId);
 
   function openModal(item: InventoryItemView | null) {
@@ -118,6 +122,20 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
       const result = await deactivateInventoryItemAction(null, formData);
       if (!result.ok) {
         setError(result.error ?? "Inventory item could not be removed.");
+        return;
+      }
+      router.refresh();
+    });
+  }
+
+  function handleRestore(item: InventoryItemView) {
+    const formData = new FormData();
+    formData.set("id", String(item.id));
+
+    startTransition(async () => {
+      const result = await restoreInventoryItemAction(null, formData);
+      if (!result.ok) {
+        setError(result.error ?? "Inventory item could not be restored.");
         return;
       }
       router.refresh();
@@ -235,6 +253,25 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
         <div className="flex flex-wrap gap-3">
           <button
             type="button"
+            onClick={() => setShowDeleted((current) => !current)}
+            aria-pressed={showDeleted}
+            className={`inline-flex items-center gap-2 border px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] transition ${
+              showDeleted
+                ? "border-[#303520] bg-[#303520] text-white"
+                : "border-[#7C826F] text-[#7C826F] hover:bg-[#7C826F] hover:text-white"
+            }`}
+          >
+            <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 6h18" />
+              <path d="M8 6V4h8v2" />
+              <path d="M6 6l1 15h10l1-15" />
+              <path d="M10 11v6" />
+              <path d="M14 11v6" />
+            </svg>
+            {showDeleted ? "Deleted" : "Trash"}
+          </button>
+          <button
+            type="button"
             onClick={openListsModal}
             className="border border-[#7C826F] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#7C826F] transition hover:bg-[#7C826F] hover:text-white"
           >
@@ -274,7 +311,11 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
               {filteredItems.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-5 py-20 text-center text-sm text-[#7C826F]">
-                    {hasActiveFilter ? "No inventory items match your filters." : "No inventory items yet."}
+                    {hasActiveFilter
+                      ? "No inventory items match your filters."
+                      : showDeleted
+                        ? "No deleted inventory items."
+                        : "No inventory items yet."}
                   </td>
                 </tr>
               ) : (
@@ -304,7 +345,10 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
                     </td>
                     <td className="px-5 py-4 text-[#7C826F]">{item.expirationDate || "—"}</td>
                     <td className="px-5 py-4">
-                      <span className="inline-block h-2 w-2 rounded-full bg-[#9EAD82]" aria-label={item.isActive ? "Active" : "Inactive"} />
+                      <span
+                        className={`inline-block h-2 w-2 rounded-full ${item.isActive ? "bg-[#9EAD82]" : "bg-[#B1AA9A]"}`}
+                        aria-label={item.isActive ? "Active" : "Inactive"}
+                      />
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex justify-end gap-3">
@@ -315,14 +359,25 @@ export function InventoryManager({ items, categories, units }: InventoryManagerP
                         >
                           Edit
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeactivate(item)}
-                          disabled={isPending}
-                          className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#B86B5D] hover:text-[#7C332B] disabled:opacity-50"
-                        >
-                          Remove
-                        </button>
+                        {item.isActive ? (
+                          <button
+                            type="button"
+                            onClick={() => handleDeactivate(item)}
+                            disabled={isPending}
+                            className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#B86B5D] hover:text-[#7C332B] disabled:opacity-50"
+                          >
+                            Remove
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleRestore(item)}
+                            disabled={isPending}
+                            className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#7C826F] hover:text-[#303520] disabled:opacity-50"
+                          >
+                            Restore
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
