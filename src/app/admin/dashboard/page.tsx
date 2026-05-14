@@ -1,5 +1,6 @@
 import { requireAdmin } from "@/lib/auth/admin";
 import {
+  BookingListFilters,
   countBookingsForDashboard,
   listBookingsForDashboard,
 } from "@/features/booking/service";
@@ -8,18 +9,31 @@ import { BookingFilters } from "./BookingFilters";
 import Link from "next/link";
 
 type PageProps = {
-  params: Promise<any>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function AdminDashboardPage({ params, searchParams }: PageProps) {
+const bookingStatuses = ["NEW", "CHECKED", "DEPOSIT_PAID", "CONFIRMED", "CANCELED"] as const;
+
+function getStatusParam(value: string | string[] | undefined): BookingListFilters["status"] {
+  const status = Array.isArray(value) ? value[0] : value;
+  return bookingStatuses.includes(status as (typeof bookingStatuses)[number])
+    ? (status as BookingListFilters["status"])
+    : undefined;
+}
+
+function getStringParam(value: string | string[] | undefined): string {
+  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
+
+export default async function AdminDashboardPage({ searchParams }: PageProps) {
   await requireAdmin();
-  const [sParams, _] = await Promise.all([searchParams, params]);
+  const sParams = await searchParams;
   const currentPage = Number(sParams.page) || 1;
-  const statusParam = sParams.status as any;
+  const statusParam = getStatusParam(sParams.status);
   const sortParam = (sParams.sort as "asc" | "desc") || "desc";
-  const queryParam = sParams.query as string;
+  const queryParam = getStringParam(sParams.query);
   const showPast = sParams.past === "1";
+  const showTrash = sParams.trash === "1";
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -30,10 +44,12 @@ export default async function AdminDashboardPage({ params, searchParams }: PageP
     query: queryParam,
     page: currentPage,
     pageSize: 20,
-    ...(showPast 
-      ? { dateTo: new Date(today.getTime() - 1) } 
-      : { dateFrom: today }
-    )
+    isActive: !showTrash,
+    ...(!showTrash
+      ? showPast
+        ? { dateTo: new Date(today.getTime() - 1) }
+        : { dateFrom: today }
+      : {}),
   };
 
   const [bookings, totalCount] = await Promise.all([
@@ -49,7 +65,8 @@ export default async function AdminDashboardPage({ params, searchParams }: PageP
     if (statusParam) current.set("status", statusParam);
     if (sortParam !== "desc") current.set("sort", sortParam);
     if (queryParam) current.set("query", queryParam);
-    if (showPast) current.set("past", "1");
+    if (showPast && !showTrash) current.set("past", "1");
+    if (showTrash) current.set("trash", "1");
     Object.entries(newParams).forEach(([k, v]) => current.set(k, v));
     return `/admin/dashboard?${current.toString()}`;
   };
@@ -71,7 +88,7 @@ export default async function AdminDashboardPage({ params, searchParams }: PageP
               <Link
                 href="/admin/dashboard"
                 className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-                  !showPast ? "bg-[#7C826F] text-white" : "text-[#7C826F] hover:bg-[#EAE8E4]"
+                  !showPast && !showTrash ? "bg-[#7C826F] text-white" : "text-[#7C826F] hover:bg-[#EAE8E4]"
                 }`}
               >
                 Upcoming
@@ -79,10 +96,25 @@ export default async function AdminDashboardPage({ params, searchParams }: PageP
               <Link
                 href="/admin/dashboard?past=1"
                 className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
-                  showPast ? "bg-[#7C826F] text-white" : "text-[#7C826F] hover:bg-[#EAE8E4]"
+                  showPast && !showTrash ? "bg-[#7C826F] text-white" : "text-[#7C826F] hover:bg-[#EAE8E4]"
                 }`}
               >
                 Past Events
+              </Link>
+              <Link
+                href="/admin/dashboard?trash=1"
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                  showTrash ? "bg-[#303520] text-white" : "text-[#7C826F] hover:bg-[#EAE8E4]"
+                }`}
+              >
+                <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4h8v2" />
+                  <path d="M6 6l1 15h10l1-15" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                </svg>
+                Trash
               </Link>
             </div>
           </div>
@@ -93,11 +125,12 @@ export default async function AdminDashboardPage({ params, searchParams }: PageP
             initialQuery={queryParam} 
             initialStatus={statusParam} 
             initialSort={sortParam} 
+            baseUrl={showTrash ? "/admin/dashboard?trash=1" : "/admin/dashboard"}
           />
 
           {bookings.length === 0 ? (
             <div className="mt-8 rounded-none border border-dashed border-[#D6CAB7] bg-white/50 p-12 text-center text-sm text-[#7C826F]">
-              No bookings found.
+              {showTrash ? "No deleted bookings found." : "No bookings found."}
             </div>
           ) : (
             <div className="mt-6 overflow-x-auto border border-[#D9D4C7] bg-white shadow-sm">
@@ -119,6 +152,7 @@ export default async function AdminDashboardPage({ params, searchParams }: PageP
                     <BookingRow 
                       key={booking.id} 
                       booking={booking} 
+                      isTrash={showTrash}
                     />
                   ))}
                 </tbody>
