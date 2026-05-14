@@ -1,15 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Raleway } from "next/font/google";
 
-const raleway = Raleway({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
-});
+const adminFontClass = "font-sans tabular-nums [font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe_UI,sans-serif]";
 
 export default function AdminLayout({
   children,
@@ -17,17 +12,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
-
-  // Hydration 오류 방지를 위해 마운트 후 상태 활성화
-  useEffect(() => {
-    setMounted(true);
-    // 초기 화면 크기가 작으면 닫아둠
-    if (window.innerWidth < 1024) {
-      setIsOpen(false);
-    }
-  }, []);
 
   const menuItems = [
     { name: "Dashboard", href: "/admin/dashboard", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
@@ -36,18 +21,13 @@ export default function AdminLayout({
     { name: "Inventory", href: "/admin/inventory", icon: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
   ];
 
-  // 마운트 전에는 로직 없이 렌더링하여 Hydration mismatch 방지
-  if (!mounted) {
-    return <div className={raleway.className}>{children}</div>;
-  }
-
   // 로그인 페이지에서는 레이아웃 제외
   if (pathname === "/admin/login") {
-    return <div className={raleway.className}>{children}</div>;
+    return <div className={adminFontClass}>{children}</div>;
   }
 
   return (
-    <div className={`${raleway.className} flex min-h-screen bg-[#FDFCFB] text-[#303520]`}>
+    <div className={`${adminFontClass} flex min-h-screen bg-[#FDFCFB] text-[#303520]`}>
       {/* Sidebar Navigation */}
       <aside 
         className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-[#D6D5CE] bg-white transition-transform duration-300 ease-in-out ${

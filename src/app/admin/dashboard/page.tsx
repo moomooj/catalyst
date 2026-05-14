@@ -140,6 +140,7 @@ export default async function AdminDashboardPage({ searchParams }: PageProps) {
                     <th className="px-4 py-4">ID</th>
                     <th className="px-4 py-4">Date</th>
                     <th className="px-4 py-4">Name</th>
+                    <th className="px-4 py-4">Phone</th>
                     <th className="px-4 py-4">Email</th>
                     <th className="px-4 py-4">Status</th>
                     <th className="px-4 py-4">Deposit</th>

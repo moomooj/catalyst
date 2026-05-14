@@ -46,6 +46,9 @@ export default async function BookingDetailPage({
   const cocktailsValue = Array.isArray(booking.cocktails)
     ? booking.cocktails.join(", ")
     : "";
+  const cocktailNames = Array.isArray(booking.cocktails)
+    ? booking.cocktails.filter((cocktail): cocktail is string => typeof cocktail === "string" && cocktail.trim().length > 0)
+    : [];
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const isEditMode = resolvedSearchParams?.edit === "1";
   const saveError = resolvedSearchParams?.error;
@@ -142,23 +145,15 @@ export default async function BookingDetailPage({
       amount: opt.price,
     })),
   ];
-  const invoiceNumber = `#${String(booking.id).padStart(5, "0")}`;
-
   return (
     <main className="min-h-dvh bg-[#EAE8E4] px-6 py-12 text-[#303520]">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
         <header className="rounded-none bg-[#D6D5CE] p-8 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.24em] text-[#7C826F]">
+              <h1 className="text-xs font-medium uppercase tracking-[0.24em] text-[#7C826F]">
                 Booking Detail
-              </p>
-              <h1 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
-                {booking.name}
               </h1>
-              <p className="mt-2 text-sm text-[#7C826F]">
-                {booking.email} · {booking.phone}
-              </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Link
@@ -190,7 +185,7 @@ export default async function BookingDetailPage({
                 Booking Info
               </p>
               <h2 className="mt-2 text-xl font-semibold">
-                {booking.eventType.replace("_", " ")} · {booking.venueType}
+                {booking.name}
               </h2>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -413,99 +408,141 @@ export default async function BookingDetailPage({
               </div>
             </form>
           ) : (
-            <div id="invoice" className="mt-6 border border-[#D9D4C7] bg-[#FDFCF8] px-6 py-8 md:px-10">
-              <div className="flex flex-wrap items-start justify-between gap-6 border-b border-[#D9D4C7] pb-8">
-                <div>
-                  <p className="text-2xl font-semibold tracking-tight">
-                    Catalyst
-                  </p>
-                  <p className="text-sm text-[#6E7363]">Mobile Bar</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-semibold tracking-tight">
-                    INVOICE
-                  </p>
-                  <p className="mt-2 text-sm font-medium text-[#303520]">
-                    booking Number {invoiceNumber}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-7 border-b border-[#D9D4C7] pb-7">
-                <dl className="grid gap-x-12 gap-y-6 text-sm sm:grid-cols-2">
-                  <div className="space-y-6">
-                    <div>
-                      <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
-                        Name
-                      </dt>
-                      <dd className="mt-1.5 text-base font-medium leading-snug text-[#303520]">
-                        {booking.name}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
-                        Email
-                      </dt>
-                      <dd className="mt-1.5 break-all leading-snug text-[#303520]">
-                        {booking.email}
-                      </dd>
-                    </div>
+            <div className="mt-6 space-y-6">
+              <section className="border border-[#D9D4C7] bg-[#FDFCF8] px-6 py-8 md:px-10">
+                <p className="text-3xl font-semibold tracking-tight">
+                  Information
+                </p>
+                <dl className="mt-5 grid gap-x-12 gap-y-5 text-sm md:grid-cols-2">
+                  <div>
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
+                      Name
+                    </dt>
+                    <dd className="mt-1.5 font-medium leading-snug text-[#303520]">
+                      {booking.name}
+                    </dd>
                   </div>
-                  <div className="space-y-6">
-                    <div>
-                      <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
-                        Address
-                      </dt>
-                      <dd className="mt-1.5 leading-snug text-[#303520]">
-                        {booking.address} / {booking.venueType}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
-                        Phone
-                      </dt>
-                      <dd className="mt-1.5 tabular-nums leading-snug text-[#303520]">
-                        {booking.phone}
-                      </dd>
-                    </div>
+                  <div>
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
+                      Date
+                    </dt>
+                    <dd className="mt-1.5 tabular-nums leading-snug text-[#303520]">
+                      {toIsoDate(booking.date)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
+                      Email
+                    </dt>
+                    <dd className="mt-1.5 break-all leading-snug text-[#303520]">
+                      {booking.email}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
+                      Phone
+                    </dt>
+                    <dd className="mt-1.5 tabular-nums leading-snug text-[#303520]">
+                      {booking.phone}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
+                      Event
+                    </dt>
+                    <dd className="mt-1.5 leading-snug text-[#303520]">
+                      {booking.eventType.replace("_", " ")} / {booking.venueType}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
+                      Guest Count
+                    </dt>
+                    <dd className="mt-1.5 tabular-nums leading-snug text-[#303520]">
+                      {booking.guestCount}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
+                      Package
+                    </dt>
+                    <dd className="mt-1.5 leading-snug text-[#303520]">
+                      {packageLabel}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
+                      Address
+                    </dt>
+                    <dd className="mt-1.5 leading-snug text-[#303520]">
+                      {booking.address}
+                    </dd>
+                  </div>
+                  <div className="md:col-span-2">
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
+                      Cocktails
+                    </dt>
+                    <dd className="mt-2 flex flex-wrap gap-2 text-[#303520]">
+                      {cocktailNames.length > 0 ? (
+                        cocktailNames.map((cocktail) => (
+                          <span
+                            key={cocktail}
+                            className="border border-[#D6CAB7] bg-white px-3 py-1.5 text-xs font-medium text-[#303520]"
+                          >
+                            {cocktail}
+                          </span>
+                        ))
+                      ) : (
+                        "-"
+                      )}
+                    </dd>
+                  </div>
+                  <div className="md:col-span-2">
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7C826F]">
+                      Note
+                    </dt>
+                    <dd className="mt-1.5 whitespace-pre-wrap leading-snug text-[#303520]">
+                      {booking.note?.trim() ? booking.note : "-"}
+                    </dd>
                   </div>
                 </dl>
-              </div>
+              </section>
 
-              <div className="mt-7 border-b border-[#D9D4C7] pb-7">
-                <p className="text-3xl font-semibold tracking-tight">
-                  Description
-                </p>
-                <div className="mt-5 space-y-3 text-sm">
-                  {invoiceItems.map((item) => (
-                    <div
-                      key={item.label}
-                      className="grid grid-cols-[1fr_auto] items-start gap-4 border-b border-[#ECE8DD] pb-2"
-                    >
-                      <div>
-                        <p className="font-medium text-[#303520]">
-                          {item.label}
-                        </p>
-                        <p className="text-xs leading-relaxed text-[#7C826F] break-words">
-                          {item.detail}
+              <section id="invoice" className="border border-[#D9D4C7] bg-[#FDFCF8] px-6 py-8 md:px-10">
+                <div className="border-b border-[#D9D4C7] pb-7">
+                  <p className="text-3xl font-semibold tracking-tight">
+                    Invoice
+                  </p>
+                  <div className="mt-5 space-y-3 text-sm">
+                    {invoiceItems.map((item) => (
+                      <div
+                        key={item.label}
+                        className="grid grid-cols-[1fr_auto] items-start gap-4 border-b border-[#ECE8DD] pb-2"
+                      >
+                        <div>
+                          <p className="font-medium text-[#303520]">
+                            {item.label}
+                          </p>
+                          <p className="text-xs leading-relaxed text-[#7C826F] break-words">
+                            {item.detail}
+                          </p>
+                        </div>
+                        <p className="text-right font-medium text-[#303520]">
+                          {item.amount !== null ? (
+                            formatCurrency(item.amount)
+                          ) : (
+                            <span className="text-sm font-normal text-[#7C826F]">
+                              Included
+                            </span>
+                          )}
                         </p>
                       </div>
-                      <p className="text-right font-medium text-[#303520]">
-                        {item.amount !== null ? (
-                          formatCurrency(item.amount)
-                        ) : (
-                          <span className="text-sm font-normal text-[#7C826F]">
-                            Included
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <div className="mt-7 flex justify-end">
-                <div className="w-full max-w-sm space-y-2 text-sm">
+                <div className="mt-7 flex justify-end">
+                  <div className="w-full max-w-sm space-y-2 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-[#7C826F]">Subtotal</span>
                     <span className="font-medium">
@@ -557,26 +594,9 @@ export default async function BookingDetailPage({
                       {formatCurrency(totalDue)}
                     </span>
                   </div>
+                  </div>
                 </div>
-              </div>
-
-              <div className="mt-8 grid gap-6 border-t border-[#D9D4C7] pt-6 md:grid-cols-2">
-                <div>
-                  <p className="text-2xl font-semibold tracking-tight">
-                    Bank Details
-                  </p>
-                  <p className="mt-3 text-sm text-[#5F6555]">
-                    Payment details are confirmed directly by Catalyst admin.
-                  </p>
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold tracking-tight">Terms</p>
-                  <p className="mt-3 text-sm text-[#5F6555]">
-                    Deposit and final payment follow your confirmed booking
-                    terms. Please keep this invoice for your records.
-                  </p>
-                </div>
-              </div>
+              </section>
             </div>
           )}
         </div>

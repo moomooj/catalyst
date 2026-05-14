@@ -11,6 +11,7 @@ type Props = {
     id: number;
     date: Date;
     name: string;
+    phone: string;
     email: string;
     status: string;
     depositPaid: boolean;
@@ -58,16 +59,19 @@ export function BookingRow({ booking, isTrash }: Props) {
       onClick={handleRowClick}
       className="group cursor-pointer transition hover:bg-[#FDFCF8]"
     >
-      <td className="px-4 py-4 text-[10px] font-bold text-[#B1AA9A]">
+      <td className="px-4 py-4 text-xs font-semibold tabular-nums text-[#B1AA9A]">
         #{String(booking.id).padStart(5, "0")}
       </td>
       <td className="px-4 py-4">
-        <span className="block text-xs font-medium uppercase tracking-[0.15em] text-[#7C826F] group-hover:text-[#303520]">
+        <span className="block text-xs font-medium uppercase tracking-normal tabular-nums text-[#7C826F] group-hover:text-[#303520]">
           {formatBookingDateLabel(booking.date)}
         </span>
       </td>
       <td className="px-4 py-4 font-medium text-[#303520]">
         {booking.name}
+      </td>
+      <td className="px-4 py-4 font-medium tracking-normal tabular-nums text-[#303520]">
+        {booking.phone}
       </td>
       <td className="px-4 py-4 text-[#7C826F]">
         {booking.email}
