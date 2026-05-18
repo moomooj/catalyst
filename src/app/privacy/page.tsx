@@ -21,7 +21,7 @@ export default function PrivacyPage() {
           <p className="font-bold uppercase text-[9px] text-[#7C826F] tracking-widest">Business Information</p>
           <p>Catalyst Bar (Mobile Bartending Services)</p>
           <p>136 W Cordova St, Vancouver, BC V6B 2N3, Canada</p>
-          <p>Phone: (778) 814-9909</p>
+          <p>Phone: +1 (672) 867-4002</p>
           <p>Email: events@catalystbar.ca</p>
         </div>
 
@@ -29,7 +29,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="font-bold mb-2 text-[#303520]">1. OVERVIEW</h2>
             <p>
-              Catalyst Bar provides mobile bartending services and is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your personal information in accordance with the Personal Information Protection and Electronic Documents Act (PIPEDA) and other applicable Canadian privacy laws, including British Columbia's Personal Information Protection Act (PIPA).
+              Catalyst Bar provides mobile bartending services and is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your personal information in accordance with the Personal Information Protection and Electronic Documents Act (PIPEDA) and other applicable Canadian privacy laws, including British Columbia&apos;s Personal Information Protection Act (PIPA).
             </p>
           </section>
 
@@ -118,7 +118,7 @@ export default function PrivacyPage() {
             <h2 className="font-bold mb-2 text-[#303520]">10. CONTACT US</h2>
             <div className="space-y-1">
               <p>Email: events@catalystbar.ca</p>
-              <p>Phone: (778) 814-9909</p>
+              <p>Phone: +1 (672) 867-4002</p>
               <p>Address: 136 W Cordova St, Vancouver, BC V6B 2N3, Canada</p>
               <p className="mt-4 font-bold">Privacy Officer: Catalyst Bar Management</p>
             </div>

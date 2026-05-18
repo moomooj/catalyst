@@ -77,7 +77,7 @@ export function Footer() {
                 <a href="mailto:events@catalystbar.ca" className="mt-1 block text-lg font-light text-[#303520] hover:text-[#7C826F]">
                   events@catalystbar.ca
                 </a>
-                <p className="mt-2 text-sm text-[#303520] font-medium">(778) 814-9909</p>
+                <p className="mt-2 text-sm text-[#303520] font-medium">+1 (672) 867-4002</p>
               </div>
               <div className="pt-6 border-t border-[#D6CAB7]/20">
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7C826F]">

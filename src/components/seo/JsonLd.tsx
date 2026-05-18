@@ -8,7 +8,7 @@ export default function JsonLd() {
     "image": "https://catalystbar.ca/images/og-image.jpg",
     "@id": "https://catalystbar.ca",
     "url": "https://catalystbar.ca",
-    "telephone": "", // 연락처가 있다면 여기에 추가
+    "telephone": "+16728674002",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "", // 사무실 주소가 있다면 추가
